@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>MP3 A - Reproductor Multi-Tema Interactivo</title>
+    <meta name="description" content="Reproductor musical interactivo con temas y minijuegos, disponible sin conexión.">
+    <meta name="theme-color" content="#09090b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="./app-icon.svg">
+    <link rel="apple-touch-icon" href="./app-icon-180.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Press+Start+2P&family=Fira+Code:wght@400;600;700&family=Bangers&family=Orbitron:wght@500;700;900&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
@@ -366,6 +373,12 @@
                     MP3 A <span class="text-xs px-2 py-0.5 rounded accent-bg">STUDIO</span>
                 </h1>
                 <p class="text-[11px] opacity-75" id="theme-subtitle">Motor Audio + Minijuegos Dinámicos</p>
+                <div class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <button id="install-app-button" type="button" onclick="installApp()" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold border border-white/20 hover:opacity-80 transition">
+                        <i class="fa-solid fa-download mr-1"></i> Instalar app
+                    </button>
+                    <span id="offline-status" role="status" aria-live="polite" class="text-[9px] opacity-70">Preparando modo sin conexión…</span>
+                </div>
             </div>
         </div>
 
@@ -401,7 +414,7 @@
             <div class="theme-card p-5 flex flex-col gap-4 collapsible-block">
                 <div class="flex items-center gap-4">
                     <div class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden shrink-0 border border-white/20 shadow-md">
-                        <img id="track-cover" src="https://images.unsplash.com/photo-1614149162883-504ce4d13909?w=300&q=80" alt="Portada" class="w-full h-full object-cover transition-transform duration-500" onerror="this.src='https://placehold.co/300x300/1e293b/38bdf8?text=MUSIC'">
+                        <img id="track-cover" src="https://images.unsplash.com/photo-1614149162883-504ce4d13909?w=300&q=80" alt="Portada" class="w-full h-full object-cover transition-transform duration-500" onerror="this.onerror=null;this.src='./app-icon.svg'">
                         <div id="playing-badge" class="hidden absolute bottom-1 right-1 px-1.5 py-0.5 text-[9px] font-bold rounded accent-bg">LIVE</div>
                     </div>
                     <div class="min-w-0 flex-1">
@@ -2054,10 +2067,103 @@
             }
         }
 
+        let deferredInstallPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', event => {
+            event.preventDefault();
+            deferredInstallPrompt = event;
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredInstallPrompt = null;
+            document.getElementById('install-app-button').classList.add('hidden');
+            document.getElementById('offline-status').textContent = 'App instalada en este dispositivo';
+            showToast('MP3 A quedó instalada', 'fa-circle-check');
+        });
+
+        async function installApp() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            if (isStandalone) {
+                showToast('La app ya está instalada', 'fa-circle-check');
+                return;
+            }
+
+            if (window.location.protocol === 'file:') {
+                showToast('Para instalarla, primero debe publicarse en HTTPS', 'fa-circle-info');
+                return;
+            }
+
+            if (deferredInstallPrompt) {
+                try {
+                    const promptEvent = deferredInstallPrompt;
+                    deferredInstallPrompt = null;
+                    await promptEvent.prompt();
+                    const { outcome } = await promptEvent.userChoice;
+                    showToast(
+                        outcome === 'accepted' ? 'Instalación iniciada' : 'Puedes instalarla desde el menú del navegador',
+                        outcome === 'accepted' ? 'fa-circle-check' : 'fa-circle-info'
+                    );
+                } catch (error) {
+                    console.error('No se pudo iniciar la instalación de MP3 A:', error);
+                    showToast('No se pudo iniciar la instalación', 'fa-circle-exclamation');
+                }
+                return;
+            }
+
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            showToast(
+                isIOS
+                    ? 'En Safari: Compartir y luego Añadir a pantalla de inicio'
+                    : 'Abre el menú del navegador y elige Instalar aplicación o Añadir a pantalla de inicio',
+                isIOS ? 'fa-share-from-square' : 'fa-circle-info'
+            );
+        }
+
+        function initOfflineSupport() {
+            const status = document.getElementById('offline-status');
+            const installButton = document.getElementById('install-app-button');
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            if (isStandalone) {
+                installButton.classList.add('hidden');
+                status.textContent = navigator.onLine ? 'App instalada • lista sin conexión' : 'App instalada • sin conexión';
+            }
+
+            const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+            if (window.location.protocol !== 'https:' && !isLocalHost) {
+                status.textContent = 'Para instalar y usar offline, abre la app desde HTTPS';
+                return;
+            }
+            if (!('serviceWorker' in navigator)) {
+                status.textContent = 'Este navegador no admite el modo sin conexión';
+                return;
+            }
+
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(() => navigator.serviceWorker.ready)
+                .then(() => {
+                    status.textContent = navigator.onLine
+                        ? 'Lista para escuchar sin conexión'
+                        : 'Sin conexión • pistas integradas disponibles';
+                })
+                .catch(error => {
+                    status.textContent = 'No se pudo preparar el modo sin conexión';
+                    console.error('No se pudo registrar el modo sin conexión de MP3 A:', error);
+                });
+
+            window.addEventListener('online', () => {
+                status.textContent = 'Lista para escuchar sin conexión';
+            });
+            window.addEventListener('offline', () => {
+                status.textContent = 'Sin conexión • pistas integradas disponibles';
+            });
+        }
+
         /* =========================================================================
            10. INICIALIZACIÓN AL CARGAR LA VENTANA
            ========================================================================= */
         window.onload = function () {
+            initOfflineSupport();
             renderPlaylist();
             selectTrack(0);
             resizeVisualizer();
