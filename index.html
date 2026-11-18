@@ -2,7 +2,7 @@
 <html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>MP3 A - Reproductor Multi-Tema Interactivo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -46,6 +46,14 @@
         body.theme-retro button:active {
             transform: translate(2px, 2px);
             box-shadow: 1px 1px 0px #000;
+        }
+        body.theme-retro .gameboy-shell .gameboy-button {
+            border: 1px solid rgba(255, 255, 255, 0.22) !important;
+            box-shadow: 0 4px 0 rgba(35, 29, 48, 0.8) !important;
+        }
+        body.theme-retro .gameboy-shell .gameboy-button:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 rgba(35, 29, 48, 0.8) !important;
         }
 
         /* ================= TEMA: CRISTAL (ICE GLASSMORPHISM) ================= */
@@ -105,6 +113,18 @@
             border: 1px solid #ff71ce !important;
             box-shadow: 0 0 20px rgba(1, 205, 254, 0.25), inset 0 0 10px rgba(255, 113, 206, 0.2) !important;
         }
+        body.theme-synthwave.party-background-active .theme-card {
+            background: rgba(20, 5, 36, 0.58) !important;
+            backdrop-filter: blur(3px);
+        }
+
+        @keyframes aura-pop {
+            0% { opacity: 0; transform: scale(0.35) rotate(-8deg); }
+            18% { opacity: 1; transform: scale(1.12) rotate(2deg); }
+            72% { opacity: 1; transform: scale(1) rotate(0); }
+            100% { opacity: 0; transform: scale(1.45) translateY(-24px); }
+        }
+        .aura-pop { animation: aura-pop 1.9s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 
         /* ================= TEMA: COMIC (POP ART) ================= */
         body.theme-comic {
@@ -163,6 +183,8 @@
             font-family: var(--font-main);
             transition: background 0.4s ease, color 0.3s ease;
             overflow-x: hidden;
+            min-height: 100vh;
+            min-height: 100dvh;
         }
 
         .theme-card {
@@ -171,6 +193,12 @@
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             transition: all 0.3s ease;
+        }
+
+        #global-fx-canvas {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
         }
 
         .accent-bg {
@@ -192,12 +220,102 @@
             accent-color: var(--accent);
             cursor: pointer;
         }
+
+        @media (pointer: coarse), (max-width: 640px) {
+            button {
+                min-height: 44px;
+                touch-action: manipulation;
+            }
+            select {
+                min-height: 44px;
+                touch-action: manipulation;
+            }
+            input[type="range"] {
+                min-height: 32px;
+                touch-action: pan-x;
+            }
+            .touch-upload-target {
+                min-height: 44px;
+            }
+            .gameboy-controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .gameboy-control-pad {
+                width: 132px !important;
+                height: 132px !important;
+            }
+            .gameboy-shell .gameboy-button {
+                min-width: 44px;
+                min-height: 44px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding-top: env(safe-area-inset-top, 0px);
+                padding-right: env(safe-area-inset-right, 0px);
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+                padding-left: env(safe-area-inset-left, 0px);
+            }
+            input:not([type="range"]):not([type="file"]),
+            select,
+            textarea {
+                font-size: 16px !important;
+            }
+            #app-main {
+                gap: 1rem;
+            }
+            #playback-controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            #audio-meter-row {
+                flex-wrap: wrap;
+            }
+            #playback-rate-control {
+                flex: 1 1 100%;
+                align-items: center;
+            }
+            #playback-rate {
+                width: min(100%, 12rem);
+                max-width: 12rem;
+                font-family: Arial, sans-serif !important;
+            }
+            #app-header,
+            #app-main,
+            #app-footer {
+                padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
+                padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+            }
+            #theme-game-wrapper {
+                padding: 0.75rem;
+            }
+            #panel-retro .gameboy-shell {
+                padding: 0.5rem;
+            }
+            #panel-retro .gameboy-shell > div:first-child {
+                padding: 0.5rem;
+            }
+            #panel-retro .gameboy-screen {
+                border-width: 6px;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between relative selection:bg-emerald-500 selection:text-black">
 
+    <div id="party-background-layer" class="fixed inset-0 z-0 hidden overflow-hidden pointer-events-none" aria-hidden="true">
+        <img id="party-background-image" class="hidden h-full w-full object-cover opacity-60">
+        <video id="party-background-video" class="hidden h-full w-full object-cover opacity-60" muted loop playsinline></video>
+        <div class="absolute inset-0 bg-black/35"></div>
+    </div>
+
     <!-- Canvas Global de Fuegos Artificiales (Synthwave) y Derrumbe de Letras (Hacker) -->
     <canvas id="global-fx-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+    <div id="aura-burst-message" class="fixed inset-0 z-[60] hidden items-center justify-center pointer-events-none" aria-live="polite">
+        <span class="aura-pop rounded-2xl border-4 border-white/80 bg-fuchsia-950/70 px-6 py-4 text-4xl font-black italic tracking-widest text-[#fffb96] shadow-[0_0_40px_#ff71ce] sm:px-10 sm:py-6 sm:text-7xl">+1000 AURA</span>
+    </div>
 
     <!-- Overlay de Código Fuente en Vivo (Hacker 3 Segundos) -->
     <div id="hacker-code-overlay" class="fixed inset-0 z-40 pointer-events-none hidden flex-col justify-between p-4 bg-black/75 backdrop-blur-xs overflow-hidden">
@@ -228,7 +346,7 @@
     </div>
 
     <!-- HEADER & SELECTOR DE TEMAS -->
-    <header id="app-header" class="w-full max-w-7xl mx-auto px-4 pt-4 pb-2 flex flex-col lg:flex-row items-center justify-between gap-4 z-10">
+    <header id="app-header" class="relative z-10 w-full max-w-7xl mx-auto px-4 pt-4 pb-2 flex flex-col lg:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-3">
             <div class="w-12 h-12 rounded-xl accent-bg flex items-center justify-center shadow-lg overflow-hidden">
                 <svg viewBox="0 0 64 64" class="w-full h-full" role="img" aria-label="Persona caminando hacia el horizonte">
@@ -275,7 +393,7 @@
     </header>
 
     <!-- CONTENIDO PRINCIPAL -->
-    <main id="app-main" class="w-full max-w-7xl mx-auto px-4 py-3 grid grid-cols-1 lg:grid-cols-12 gap-5 flex-1 z-10">
+    <main id="app-main" class="relative z-10 w-full max-w-7xl mx-auto px-4 py-3 grid grid-cols-1 lg:grid-cols-12 gap-5 flex-1">
 
         <!-- COLUMNA IZQUIERDA: REPRODUCTOR Y LISTA (5 COLS) -->
         <section class="lg:col-span-5 flex flex-col gap-4">
@@ -292,7 +410,7 @@
                         <p id="track-artist" class="text-xs opacity-80 truncate">ANGELB Audio Engine</p>
                         
                         <!-- Medidor de Bass & Velocidad en tiempo real -->
-                        <div class="mt-2 flex items-center gap-3 text-[10px]">
+                        <div id="audio-meter-row" class="mt-2 flex items-center gap-3 text-[10px]">
                             <div class="flex items-center gap-1">
                                 <span class="opacity-70">BASS:</span>
                                 <div class="w-14 h-2 bg-black/30 rounded-full overflow-hidden border border-white/10">
@@ -317,7 +435,7 @@
                 </div>
 
                 <!-- Controles Principales -->
-                <div class="flex items-center justify-between gap-2">
+                <div id="playback-controls" class="flex items-center justify-between gap-2">
                     <button onclick="prevTrack()" class="p-3 rounded-xl hover:opacity-80 transition" title="Anterior">
                         <i class="fa-solid fa-backward-step"></i>
                     </button>
@@ -329,7 +447,7 @@
                     </button>
                     
                     <!-- Control de Velocidad / Pitch (Afecta fuegos artificiales en Synthwave) -->
-                    <div class="flex flex-col items-end gap-1">
+                    <div id="playback-rate-control" class="flex flex-col items-end gap-1">
                         <label class="text-[10px] opacity-75 font-bold">VELOCIDAD</label>
                         <select id="playback-rate" onchange="changePlaybackRate(this.value)" class="text-xs px-2 py-1 rounded bg-black/30 border border-white/20 outline-none">
                             <option value="0.75">0.75x Chill</option>
@@ -346,7 +464,7 @@
                         <i class="fa-solid fa-volume-high text-xs opacity-75"></i>
                         <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.8" class="w-full h-1.5">
                     </div>
-                    <label class="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-bold border border-white/20 hover:opacity-80 transition flex items-center gap-1.5">
+                    <label class="touch-upload-target cursor-pointer px-3 py-1.5 rounded-lg text-xs font-bold border border-white/20 hover:opacity-80 transition flex items-center gap-1.5">
                         <i class="fa-solid fa-upload"></i> Subir MP3
                         <input type="file" id="audio-upload" accept="audio/*" class="hidden" onchange="handleFileUpload(event)">
                     </label>
@@ -404,27 +522,51 @@
                     <div class="flex flex-wrap items-center justify-between gap-2 pb-1">
                         <div class="flex items-center gap-2">
                             <span class="text-xs font-bold text-[#ffcd75]">SUPER MARIO BROS</span>
-                            <span id="mario-score" class="text-[10px] bg-black/50 px-2 py-0.5 text-white">MONEDAS: 0</span>
                         </div>
                         <div class="flex items-center gap-1.5">
                             <button onclick="resetMarioGame()" class="px-2 py-1 text-[10px] bg-red-600 text-white">REINICIAR</button>
                         </div>
                     </div>
-                    <div class="relative w-full h-56 sm:h-64 bg-[#5c94fc] border-4 border-white overflow-hidden">
-                        <canvas id="mario-canvas" class="w-full h-full block"></canvas>
-                        <div id="mario-overlay" class="hidden absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-center p-4">
-                            <p id="mario-msg" class="text-sm text-[#ffcd75] mb-3">¡NIVEL COMPLETADO!</p>
-                            <button onclick="resetMarioGame()" class="px-4 py-2 bg-[#ffcd75] text-black text-xs font-bold">JUGAR DE NUEVO</button>
+                    <div class="gameboy-shell mx-auto w-full rounded-[2rem] border-4 border-[#aaa4b5] bg-gradient-to-br from-[#d7d3df] to-[#b4afc0] p-3 shadow-[0_8px_0_#726d7d] sm:p-4">
+                        <div class="rounded-xl border-4 border-[#777180] bg-[#403c4b] p-2.5 shadow-inner sm:p-3">
+                            <div class="mb-2 flex items-center justify-between gap-2 text-[9px] font-bold tracking-widest text-[#eeeaf4]">
+                                <span>DOT MATRIX WITH STEREO SOUND</span>
+                                <span id="mario-score" class="bg-black/40 px-2 py-1 text-[#ffcd75]">MONEDAS: 0</span>
+                            </div>
+                            <div class="gameboy-screen relative h-48 w-full overflow-hidden rounded-md border-[8px] border-[#17151d] bg-[#5c94fc] shadow-inner sm:h-56">
+                                <canvas id="mario-canvas" class="block h-full w-full"></canvas>
+                                <div id="mario-overlay" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-black/70 p-4 text-center">
+                                    <p id="mario-msg" class="mb-3 text-sm text-[#ffcd75]">¡NIVEL COMPLETADO!</p>
+                                    <button onclick="resetMarioGame()" class="rounded-full bg-[#ffcd75] px-4 py-2 text-xs font-bold text-black">JUGAR DE NUEVO</button>
+                                </div>
+                            </div>
+                            <div class="mt-2 flex justify-between text-[8px] font-bold tracking-widest text-[#c7c1d0]">
+                                <span>POWER <i class="fa-solid fa-circle text-[6px] text-red-500"></i></span>
+                                <span>SUPER MARIO BROS.</span>
+                            </div>
                         </div>
-                    </div>
-                    <!-- Controles Táctiles y Teclado Mario -->
-                    <div class="flex items-center justify-between pt-1">
-                        <span class="text-[10px] opacity-80 hidden sm:inline">Flechas / WASD + Espacio para saltar</span>
-                        <div class="flex items-center gap-2 mx-auto sm:mx-0">
-                            <button onmousedown="marioKeys.left=true" onmouseup="marioKeys.left=false" ontouchstart="marioKeys.left=true" ontouchend="marioKeys.left=false" class="px-4 py-2 bg-zinc-800 text-white text-xs"><i class="fa-solid fa-arrow-left"></i></button>
-                            <button onmousedown="marioKeys.right=true" onmouseup="marioKeys.right=false" ontouchstart="marioKeys.right=true" ontouchend="marioKeys.right=false" class="px-4 py-2 bg-zinc-800 text-white text-xs"><i class="fa-solid fa-arrow-right"></i></button>
-                            <button onmousedown="marioJump()" ontouchstart="marioJump()" class="px-5 py-2 bg-[#ffcd75] text-black text-xs font-bold">SALTAR</button>
+                        <div class="gameboy-controls flex items-center justify-between gap-4 px-2 pt-4 sm:px-6">
+                            <div class="gameboy-control-pad grid h-[90px] w-[90px] shrink-0 grid-cols-3 grid-rows-3 gap-0.5" role="group" aria-label="Cruceta">
+                                <button aria-label="Saltar" title="Saltar" onpointerdown="marioJump()" class="gameboy-button col-start-2 row-start-1 touch-none rounded-t-md bg-[#302c38] text-lg font-black text-white">▲</button>
+                                <button aria-label="Mover a la izquierda" title="Izquierda" onpointerdown="marioKeys.left=true" onpointerup="marioKeys.left=false" onpointerleave="marioKeys.left=false" onpointercancel="marioKeys.left=false" class="gameboy-button col-start-1 row-start-2 touch-none rounded-l-md bg-[#302c38] text-lg font-black text-white">◀</button>
+                                <div class="col-start-2 row-start-2 flex items-center justify-center bg-[#302c38] text-sm text-[#17151d]">✚</div>
+                                <button aria-label="Mover a la derecha" title="Derecha" onpointerdown="marioKeys.right=true" onpointerup="marioKeys.right=false" onpointerleave="marioKeys.right=false" onpointercancel="marioKeys.right=false" class="gameboy-button col-start-3 row-start-2 touch-none rounded-r-md bg-[#302c38] text-lg font-black text-white">▶</button>
+                                <button aria-label="Frenar" title="Frenar" onpointerdown="marioKeys.brake=true" onpointerup="marioKeys.brake=false" onpointerleave="marioKeys.brake=false" onpointercancel="marioKeys.brake=false" class="gameboy-button col-start-2 row-start-3 touch-none rounded-b-md bg-[#302c38] text-lg font-black text-white">▼</button>
+                            </div>
+                            <div class="flex shrink-0 rotate-[-18deg] items-center gap-2">
+                                <button aria-label="Correr" title="B: correr" onpointerdown="marioKeys.run=true" onpointerup="marioKeys.run=false" onpointerleave="marioKeys.run=false" onpointercancel="marioKeys.run=false" class="gameboy-button flex h-12 w-12 touch-none flex-col items-center justify-center rounded-full bg-[#8b2452] text-xs font-black text-white sm:h-14 sm:w-14">
+                                    <span>B</span><span class="text-[7px]">CORRER</span>
+                                </button>
+                                <button aria-label="Saltar" title="A: saltar" onpointerdown="marioJump()" class="gameboy-button flex h-12 w-12 touch-none flex-col items-center justify-center rounded-full bg-[#8b2452] text-xs font-black text-white sm:h-14 sm:w-14">
+                                    <span>A</span><span class="text-[7px]">SALTAR</span>
+                                </button>
+                            </div>
                         </div>
+                        <div class="mt-3 flex items-center justify-center gap-2 text-[9px] font-bold tracking-widest text-[#514c5b]">
+                            <span>SELECT</span><span class="h-2 w-8 rounded-full bg-[#777180]"></span>
+                            <span>START</span><span class="h-2 w-8 rounded-full bg-[#777180]"></span>
+                        </div>
+                        <p class="mt-2 text-center text-[9px] font-bold text-[#514c5b]">FLECHAS: MOVER / FRENAR • A: SALTAR • B / SHIFT: CORRER</p>
                     </div>
                 </div>
 
@@ -443,7 +585,7 @@
                         </div>
                     </div>
                     <div class="relative w-full h-60 sm:h-64 rounded-2xl overflow-hidden border border-white/40 bg-gradient-to-b from-sky-900/60 to-cyan-950/80">
-                        <canvas id="ice-canvas" class="w-full h-full block cursor-pointer"></canvas>
+                        <canvas id="ice-canvas" class="w-full h-full block cursor-pointer touch-none"></canvas>
                     </div>
                 </div>
 
@@ -486,6 +628,23 @@
                         <input type="text" id="terminal-cmd-input" placeholder="Escribe 'help', 'scan', 'skeleton' o 'collapse'..." class="flex-1 bg-transparent text-xs text-green-400 outline-none">
                         <button type="submit" class="text-[10px] px-2 py-0.5 bg-green-500 text-black font-bold">RUN</button>
                     </form>
+
+                    <div class="relative flex min-h-24 flex-1 items-center justify-center overflow-hidden border border-green-500/30 bg-black/60 px-3">
+                        <span class="absolute left-2 top-1 text-[9px] tracking-widest text-green-700">VISUALIZADOR DE ALIAS // BASS</span>
+                        <span id="hacker-name-visualizer" aria-live="polite" class="max-w-full break-all text-center text-2xl font-black tracking-[0.12em] text-green-400 transition-[transform,text-shadow] duration-75 sm:text-4xl">HACKER_ROOT</span>
+                    </div>
+
+                    <div role="img" aria-label="Máscara de Anonymous, ANGEL" class="mt-auto flex flex-col items-center self-end pr-2 pb-1 text-green-400 drop-shadow-[0_0_10px_rgba(0,255,65,0.65)]">
+                        <svg viewBox="0 0 100 100" class="h-16 w-16" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M18 18 Q50 3 82 18 L78 61 Q75 82 50 96 Q25 82 22 61 Z" fill="rgba(0,255,65,0.12)"/>
+                            <path d="M28 39 Q39 31 48 39 M52 39 Q63 31 72 39"/>
+                            <path d="M30 46 Q39 42 47 46 M53 46 Q61 42 70 46"/>
+                            <path d="M50 46 L46 59 Q50 63 54 59"/>
+                            <path d="M50 70 C39 61 29 62 26 70 Q34 83 49 74 C51 73 52 73 54 74 Q69 83 77 70 C74 62 64 61 50 70 Z" fill="currentColor" stroke-width="2"/>
+                            <path d="M37 87 Q50 91 63 87" stroke-width="2"/>
+                        </svg>
+                        <span class="mt-1 text-xs font-bold tracking-[0.3em]">ANGEL</span>
+                    </div>
                 </div>
 
                 <!-- 5. TEMA SYNTHWAVE: FUEGOS ARTIFICIALES SINCRONIZADOS CON BASS Y VELOCIDAD -->
@@ -507,6 +666,21 @@
                             <span>INTENSIDAD BASS: <strong id="synth-bass-val">0%</strong></span>
                             <span>CADENCIA VELOCIDAD: <strong id="synth-speed-val">1.0x</strong></span>
                         </div>
+                    </div>
+                    <div class="flex flex-col gap-2 rounded-xl border border-[#ff71ce]/30 bg-black/30 p-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="flex min-w-0 flex-wrap items-center gap-2">
+                            <label class="touch-upload-target cursor-pointer rounded-lg border border-[#01cdfe]/70 bg-[#090114]/80 px-3 py-2 text-xs font-bold text-[#01cdfe] transition hover:bg-[#01cdfe] hover:text-black">
+                                <i class="fa-solid fa-image mr-1"></i> Elegir foto/video
+                                <input id="party-background-upload" type="file" accept="image/*,video/*" class="hidden" onchange="handlePartyBackgroundUpload(event)">
+                            </label>
+                            <button id="party-background-clear" onclick="clearPartyBackground()" disabled class="rounded-lg border border-white/20 px-3 py-2 text-xs font-bold text-white/70 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40">
+                                Quitar fondo
+                            </button>
+                            <span id="party-background-name" class="max-w-full truncate text-[10px] text-[#ff71ce]">Sin fondo personalizado</span>
+                        </div>
+                        <button onclick="triggerAuraParty()" class="shrink-0 rounded-lg border-2 border-[#fffb96] bg-gradient-to-r from-fuchsia-600 via-purple-600 to-cyan-500 px-4 py-2.5 text-xs font-black tracking-widest text-white shadow-[0_0_18px_#ff71ce] transition hover:scale-105">
+                            <i class="fa-solid fa-star mr-1"></i> FIESTA FULL
+                        </button>
                     </div>
                 </div>
 
@@ -544,7 +718,7 @@
         </section>
     </main>
 
-    <footer id="app-footer" class="w-full max-w-7xl mx-auto px-4 py-2 text-center text-[11px] opacity-65 z-10 collapsible-block">
+    <footer id="app-footer" class="relative z-10 w-full max-w-7xl mx-auto px-4 py-2 text-center text-[11px] opacity-65 collapsible-block">
         <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
             <span>ANGELB • Motor de Audio WebAudio API + Entornos Interactivos por Tema</span>
             <a href="https://www.instagram.com/angelnomas10" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 hover:opacity-100 transition" aria-label="Instagram del creador">
@@ -616,6 +790,9 @@
         function setTheme(theme) {
             currentTheme = theme;
             document.body.className = `min-h-screen flex flex-col justify-between relative selection:bg-emerald-500 selection:text-black ${theme !== 'default' ? 'theme-' + theme : ''}`;
+            const showPartyBackground = theme === 'synthwave' && Boolean(partyBackgroundUrl);
+            partyBackgroundLayer.classList.toggle('hidden', !showPartyBackground);
+            document.body.classList.toggle('party-background-active', showPartyBackground);
 
             // Ocultar todos los paneles de minijuegos y mostrar el correspondiente
             document.querySelectorAll('.game-panel').forEach(p => p.classList.add('hidden'));
@@ -883,6 +1060,14 @@
            ========================================================================= */
         const visCanvas = document.getElementById('visualizer-canvas');
         const visCtx = visCanvas.getContext('2d');
+        const hackerNameInput = document.getElementById('hacker-username');
+        const hackerNameVisualizer = document.getElementById('hacker-name-visualizer');
+
+        function updateHackerNameVisualizer() {
+            hackerNameVisualizer.textContent = hackerNameInput.value.trim().toUpperCase() || 'HACKER_ROOT';
+        }
+
+        hackerNameInput.addEventListener('input', updateHackerNameVisualizer);
 
         function resizeVisualizer() {
             visCanvas.width = visCanvas.parentElement.clientWidth;
@@ -890,7 +1075,10 @@
         }
         window.addEventListener('resize', () => {
             resizeVisualizer();
-            if (currentTheme === 'retro') resizeMarioCanvas();
+            if (currentTheme === 'retro') {
+                resizeMarioCanvas();
+                resetMarioGame();
+            }
             if (currentTheme === 'cristal') resizeIceCanvas();
             if (currentTheme === 'synthwave') resizeSynthwaveCanvas();
             if (currentTheme === 'comic') resizeComicCanvas();
@@ -913,6 +1101,11 @@
 
             document.getElementById('bass-meter').style.width = bassEnergy + '%';
             document.getElementById('synth-bass-val').textContent = bassEnergy + '%';
+
+            const namePulse = isPlaying ? Math.min(1, bassEnergy / 55) : 0;
+            const nameScale = 1 + namePulse * 0.3;
+            hackerNameVisualizer.style.transform = `scale(${nameScale})`;
+            hackerNameVisualizer.style.textShadow = `0 0 ${8 + namePulse * 28}px rgba(0, 255, 65, ${0.45 + namePulse * 0.55})`;
 
             // Si el tema es Synthwave y hay golpe fuerte de Bass, disparar fuegos artificiales según bass y velocidad
             if (currentTheme === 'synthwave' && isPlaying && bassEnergy > 58) {
@@ -942,7 +1135,7 @@
            ========================================================================= */
         const marioCanvas = document.getElementById('mario-canvas');
         const marioCtx = marioCanvas.getContext('2d');
-        const marioKeys = { left: false, right: false };
+        const marioKeys = { left: false, right: false, run: false, brake: false };
         let marioState = {};
 
         function resizeMarioCanvas() {
@@ -952,57 +1145,67 @@
 
         function resetMarioGame() {
             document.getElementById('mario-overlay').classList.add('hidden');
+            const w = marioCanvas.width || 500;
             const h = marioCanvas.height || 240;
-            const groundY = h - 36;
+            const scale = Math.min(1, w / 500);
+            const size = value => value * scale;
+            const groundY = h - size(36);
             marioState = {
-                x: 40,
-                y: groundY - 28,
+                scale: scale,
+                x: size(40),
+                y: groundY - size(28),
                 vx: 0,
                 vy: 0,
-                w: 22,
-                h: 28,
+                w: size(22),
+                h: size(28),
                 grounded: true,
                 score: 0,
                 won: false,
                 groundY: groundY,
                 blocks: [
-                    { x: 140, y: groundY - 75, w: 26, h: 26, hit: false },
-                    { x: 166, y: groundY - 75, w: 26, h: 26, hit: false },
-                    { x: 280, y: groundY - 95, w: 26, h: 26, hit: false },
-                    { x: 410, y: groundY - 75, w: 26, h: 26, hit: false }
+                    { x: size(140), y: groundY - size(75), w: size(26), h: size(26), hit: false },
+                    { x: size(166), y: groundY - size(75), w: size(26), h: size(26), hit: false },
+                    { x: size(280), y: groundY - size(95), w: size(26), h: size(26), hit: false },
+                    { x: size(410), y: groundY - size(75), w: size(26), h: size(26), hit: false }
                 ],
                 coins: [
-                    { x: 147, y: groundY - 105, collected: false },
-                    { x: 173, y: groundY - 105, collected: false },
-                    { x: 287, y: groundY - 125, collected: false },
-                    { x: 350, y: groundY - 45, collected: false },
-                    { x: 417, y: groundY - 105, collected: false }
+                    { x: size(147), y: groundY - size(105), collected: false },
+                    { x: size(173), y: groundY - size(105), collected: false },
+                    { x: size(287), y: groundY - size(125), collected: false },
+                    { x: size(350), y: groundY - size(45), collected: false },
+                    { x: size(417), y: groundY - size(105), collected: false }
                 ],
                 pipes: [
-                    { x: 225, y: groundY - 38, w: 32, h: 38 },
-                    { x: 355, y: groundY - 50, w: 32, h: 50 }
+                    { x: size(225), y: groundY - size(38), w: size(32), h: size(38) },
+                    { x: size(355), y: groundY - size(50), w: size(32), h: size(50) }
                 ],
-                flagX: Math.max(480, marioCanvas.width - 55)
+                flagX: Math.max(0, w - size(45))
             };
             document.getElementById('mario-score').textContent = 'MONEDAS: 0';
         }
 
         function marioJump() {
             if (marioState.grounded && !marioState.won) {
-                marioState.vy = -10.5;
+                marioState.vy = -10.5 * marioState.scale;
                 marioState.grounded = false;
             }
         }
 
         window.addEventListener('keydown', (e) => {
             if (currentTheme !== 'retro') return;
-            if (e.key === 'ArrowLeft' || e.key === 'a') marioKeys.left = true;
-            if (e.key === 'ArrowRight' || e.key === 'd') marioKeys.right = true;
-            if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'w') marioJump();
+            const key = e.key.toLowerCase();
+            if (e.key === 'ArrowLeft' || key === 'a') marioKeys.left = true;
+            if (e.key === 'ArrowRight' || key === 'd') marioKeys.right = true;
+            if (e.key === 'ArrowDown' || key === 's') marioKeys.brake = true;
+            if (e.key === 'Shift') marioKeys.run = true;
+            if (e.key === ' ' || e.key === 'ArrowUp' || key === 'w') marioJump();
         });
         window.addEventListener('keyup', (e) => {
-            if (e.key === 'ArrowLeft' || e.key === 'a') marioKeys.left = false;
-            if (e.key === 'ArrowRight' || e.key === 'd') marioKeys.right = false;
+            const key = e.key.toLowerCase();
+            if (e.key === 'ArrowLeft' || key === 'a') marioKeys.left = false;
+            if (e.key === 'ArrowRight' || key === 'd') marioKeys.right = false;
+            if (e.key === 'ArrowDown' || key === 's') marioKeys.brake = false;
+            if (e.key === 'Shift') marioKeys.run = false;
         });
 
         function updateAndDrawMario() {
@@ -1011,20 +1214,23 @@
 
             const w = marioCanvas.width;
             const h = marioCanvas.height;
-            marioState.flagX = Math.max(360, w - 45);
+            const scale = marioState.scale;
+            marioState.flagX = Math.max(0, w - 45 * scale);
 
             // Física
             if (!marioState.won) {
-                if (marioKeys.left) marioState.vx = -3.6;
-                else if (marioKeys.right) marioState.vx = 3.6;
+                const moveSpeed = (marioKeys.run ? 5.2 : 3.6) * scale;
+                if (marioKeys.brake) marioState.vx = 0;
+                else if (marioKeys.left) marioState.vx = -moveSpeed;
+                else if (marioKeys.right) marioState.vx = moveSpeed;
                 else marioState.vx *= 0.8;
 
                 marioState.x += marioState.vx;
-                marioState.vy += 0.55; // Gravedad
+                marioState.vy += 0.55 * scale; // Gravedad
                 marioState.y += marioState.vy;
 
                 // Límites pantalla
-                if (marioState.x < 5) marioState.x = 5;
+                if (marioState.x < 5 * scale) marioState.x = 5 * scale;
                 if (marioState.x > w - marioState.w) marioState.x = w - marioState.w;
 
                 // Suelo
@@ -1038,7 +1244,7 @@
                 marioState.pipes.forEach(p => {
                     if (marioState.x + marioState.w > p.x && marioState.x < p.x + p.w &&
                         marioState.y + marioState.h > p.y && marioState.y < p.y + p.h) {
-                        if (marioState.vy > 0 && marioState.y + marioState.h - marioState.vy <= p.y + 6) {
+                        if (marioState.vy > 0 && marioState.y + marioState.h - marioState.vy <= p.y + 6 * scale) {
                             marioState.y = p.y - marioState.h;
                             marioState.vy = 0;
                             marioState.grounded = true;
@@ -1072,7 +1278,7 @@
 
                 // Recoger monedas
                 marioState.coins.forEach(c => {
-                    if (!c.collected && Math.abs((marioState.x + 11) - c.x) < 18 && Math.abs((marioState.y + 14) - c.y) < 20) {
+                    if (!c.collected && Math.abs((marioState.x + marioState.w / 2) - c.x) < 18 * scale && Math.abs((marioState.y + marioState.h / 2) - c.y) < 20 * scale) {
                         c.collected = true;
                         marioState.score += 50;
                         document.getElementById('mario-score').textContent = `MONEDAS: ${marioState.score}`;
@@ -1093,26 +1299,26 @@
 
             // Nubes pixeladas
             marioCtx.fillStyle = '#ffffff';
-            marioCtx.fillRect(60, 30, 45, 14);
-            marioCtx.fillRect(70, 22, 25, 10);
-            marioCtx.fillRect(260, 42, 55, 14);
-            marioCtx.fillRect(275, 34, 25, 10);
+            marioCtx.fillRect(60 * scale, 30 * scale, 45 * scale, 14 * scale);
+            marioCtx.fillRect(70 * scale, 22 * scale, 25 * scale, 10 * scale);
+            marioCtx.fillRect(260 * scale, 42 * scale, 55 * scale, 14 * scale);
+            marioCtx.fillRect(275 * scale, 34 * scale, 25 * scale, 10 * scale);
 
             // Suelo de ladrillos
             marioCtx.fillStyle = '#c84c0c';
             marioCtx.fillRect(0, marioState.groundY, w, h - marioState.groundY);
             marioCtx.fillStyle = '#00a800';
-            marioCtx.fillRect(0, marioState.groundY, w, 6);
+            marioCtx.fillRect(0, marioState.groundY, w, 6 * scale);
 
             // Tuberías verdes
             marioState.pipes.forEach(p => {
                 marioCtx.fillStyle = '#00a800';
                 marioCtx.fillRect(p.x, p.y, p.w, p.h);
                 marioCtx.strokeStyle = '#000';
-                marioCtx.lineWidth = 2;
+                marioCtx.lineWidth = 2 * scale;
                 marioCtx.strokeRect(p.x, p.y, p.w, p.h);
-                marioCtx.fillRect(p.x - 3, p.y, p.w + 6, 10);
-                marioCtx.strokeRect(p.x - 3, p.y, p.w + 6, 10);
+                marioCtx.fillRect(p.x - 3 * scale, p.y, p.w + 6 * scale, 10 * scale);
+                marioCtx.strokeRect(p.x - 3 * scale, p.y, p.w + 6 * scale, 10 * scale);
             });
 
             // Bloques "?"
@@ -1123,8 +1329,8 @@
                 marioCtx.strokeRect(b.x, b.y, b.w, b.h);
                 if (!b.hit) {
                     marioCtx.fillStyle = '#000';
-                    marioCtx.font = 'bold 14px monospace';
-                    marioCtx.fillText('?', b.x + 8, b.y + 18);
+                    marioCtx.font = `bold ${Math.max(7, 14 * scale)}px monospace`;
+                    marioCtx.fillText('?', b.x + 8 * scale, b.y + 18 * scale);
                 }
             });
 
@@ -1133,32 +1339,33 @@
                 if (c.collected) return;
                 marioCtx.fillStyle = '#ffcd75';
                 marioCtx.beginPath();
-                marioCtx.ellipse(c.x, c.y, 6, 9, 0, 0, Math.PI * 2);
+                marioCtx.ellipse(c.x, c.y, 6 * scale, 9 * scale, 0, 0, Math.PI * 2);
                 marioCtx.fill();
                 marioCtx.strokeStyle = '#000';
+                marioCtx.lineWidth = Math.max(1, scale);
                 marioCtx.stroke();
             });
 
             // Banderín Meta
             marioCtx.fillStyle = '#ffffff';
-            marioCtx.fillRect(marioState.flagX, marioState.groundY - 110, 4, 110);
+            marioCtx.fillRect(marioState.flagX, marioState.groundY - 110 * scale, 4 * scale, 110 * scale);
             marioCtx.fillStyle = '#00a800';
             marioCtx.beginPath();
-            marioCtx.moveTo(marioState.flagX + 4, marioState.groundY - 110);
-            marioCtx.lineTo(marioState.flagX + 32, marioState.groundY - 96);
-            marioCtx.lineTo(marioState.flagX + 4, marioState.groundY - 82);
+            marioCtx.moveTo(marioState.flagX + 4 * scale, marioState.groundY - 110 * scale);
+            marioCtx.lineTo(marioState.flagX + 32 * scale, marioState.groundY - 96 * scale);
+            marioCtx.lineTo(marioState.flagX + 4 * scale, marioState.groundY - 82 * scale);
             marioCtx.fill();
 
             // Personaje Mario (Gorra roja, peto azul, piel)
             const mx = marioState.x;
             const my = marioState.y;
             marioCtx.fillStyle = '#e40058'; // Gorra y camisa roja
-            marioCtx.fillRect(mx + 2, my, 18, 6);
-            marioCtx.fillRect(mx + 2, my + 13, 18, 9);
+            marioCtx.fillRect(mx + 2 * scale, my, 18 * scale, 6 * scale);
+            marioCtx.fillRect(mx + 2 * scale, my + 13 * scale, 18 * scale, 9 * scale);
             marioCtx.fillStyle = '#fca044'; // Cara
-            marioCtx.fillRect(mx + 4, my + 6, 14, 7);
+            marioCtx.fillRect(mx + 4 * scale, my + 6 * scale, 14 * scale, 7 * scale);
             marioCtx.fillStyle = '#0058f8'; // Overol azul
-            marioCtx.fillRect(mx + 4, my + 16, 14, 12);
+            marioCtx.fillRect(mx + 4 * scale, my + 16 * scale, 14 * scale, 12 * scale);
         }
 
         /* =========================================================================
@@ -1391,7 +1598,7 @@
         let isLetterCollapseActive = false;
 
         function triggerPageCollapse() {
-            const userInput = document.getElementById('hacker-username').value.trim();
+            const userInput = hackerNameInput.value.trim();
             const hackerName = (userInput || 'HACKER_ROOT').toUpperCase();
 
             logTerminal(`ALERTA CRÍTICA: Ejecutando derrumbe estructural firmado por [${hackerName}]...`, true);
@@ -1656,49 +1863,195 @@
            ========================================================================= */
         const fxCanvas = document.getElementById('global-fx-canvas');
         const fxCtx = fxCanvas.getContext('2d');
+        const auraParticles = [];
+        const partyBackgroundLayer = document.getElementById('party-background-layer');
+        const partyBackgroundImage = document.getElementById('party-background-image');
+        const partyBackgroundVideo = document.getElementById('party-background-video');
+        const partyBackgroundInput = document.getElementById('party-background-upload');
+        const partyBackgroundClearButton = document.getElementById('party-background-clear');
+        const partyBackgroundName = document.getElementById('party-background-name');
+        const auraBurstMessage = document.getElementById('aura-burst-message');
+        let partyBackgroundUrl = null;
+        let auraMessageTimer = null;
+
+        function resizeGlobalFxCanvas() {
+            fxCanvas.width = window.innerWidth;
+            fxCanvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeGlobalFxCanvas);
+
+        function releasePartyBackground() {
+            partyBackgroundVideo.pause();
+            partyBackgroundVideo.removeAttribute('src');
+            partyBackgroundVideo.load();
+            partyBackgroundImage.removeAttribute('src');
+            if (partyBackgroundUrl) URL.revokeObjectURL(partyBackgroundUrl);
+            partyBackgroundUrl = null;
+            partyBackgroundLayer.classList.add('hidden');
+            partyBackgroundImage.classList.add('hidden');
+            partyBackgroundVideo.classList.add('hidden');
+            document.body.classList.remove('party-background-active');
+            partyBackgroundClearButton.disabled = true;
+            partyBackgroundName.textContent = 'Sin fondo personalizado';
+        }
+
+        function handlePartyBackgroundUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            event.target.value = '';
+            if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+                showToast('Elige un archivo de imagen o video válido.', 'fa-triangle-exclamation');
+                return;
+            }
+
+            releasePartyBackground();
+            partyBackgroundUrl = URL.createObjectURL(file);
+            const showPartyBackground = currentTheme === 'synthwave';
+            partyBackgroundLayer.classList.toggle('hidden', !showPartyBackground);
+            document.body.classList.toggle('party-background-active', showPartyBackground);
+            partyBackgroundClearButton.disabled = false;
+            partyBackgroundName.textContent = file.name;
+
+            if (file.type.startsWith('video/')) {
+                partyBackgroundVideo.src = partyBackgroundUrl;
+                partyBackgroundVideo.classList.remove('hidden');
+                partyBackgroundVideo.play().catch(() => {
+                    showToast('No se pudo reproducir el video de fondo.', 'fa-circle-exclamation');
+                });
+            } else {
+                partyBackgroundImage.onerror = () => {
+                    showToast('No se pudo cargar la imagen de fondo.', 'fa-circle-exclamation');
+                };
+                partyBackgroundImage.src = partyBackgroundUrl;
+                partyBackgroundImage.classList.remove('hidden');
+            }
+
+            showToast('Fondo a pantalla completa listo', 'fa-image');
+        }
+
+        function clearPartyBackground() {
+            releasePartyBackground();
+            partyBackgroundInput.value = '';
+            showToast('Fondo personalizado quitado', 'fa-image');
+        }
+
+        function triggerAuraParty() {
+            resizeGlobalFxCanvas();
+            const colors = ['#ff4fd8', '#00e5ff', '#ffe600', '#7cff00', '#ff5e5b', '#9b5cff'];
+            const audioBoost = isPlaying ? bassEnergy / 100 : 0;
+
+            for (let burst = 0; burst < 9; burst++) {
+                const centerX = 40 + Math.random() * Math.max(1, fxCanvas.width - 80);
+                const centerY = 40 + Math.random() * Math.max(1, fxCanvas.height - 80);
+                const particleCount = 24 + Math.round(audioBoost * 12);
+
+                for (let index = 0; index < particleCount; index++) {
+                    const angle = (Math.PI * 2 * index) / particleCount;
+                    const speed = 2 + Math.random() * 4 + audioBoost * 2;
+                    auraParticles.push({
+                        x: centerX,
+                        y: centerY,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        gravity: 0.035,
+                        size: 3 + Math.random() * 5,
+                        alpha: 1,
+                        rotation: Math.random() * Math.PI,
+                        spin: (Math.random() - 0.5) * 0.18,
+                        color: colors[Math.floor(Math.random() * colors.length)]
+                    });
+                }
+            }
+
+            const messageText = auraBurstMessage.firstElementChild;
+            auraBurstMessage.classList.remove('hidden');
+            auraBurstMessage.classList.add('flex');
+            messageText.classList.remove('aura-pop');
+            void messageText.offsetWidth;
+            messageText.classList.add('aura-pop');
+            clearTimeout(auraMessageTimer);
+            auraMessageTimer = setTimeout(() => {
+                auraBurstMessage.classList.add('hidden');
+                auraBurstMessage.classList.remove('flex');
+                messageText.classList.remove('aura-pop');
+            }, 1900);
+            showToast('¡FIESTA FULL! +1000 AURA', 'fa-star');
+        }
 
         function renderGlobalFxLoop() {
             requestAnimationFrame(renderGlobalFxLoop);
-            if (!isLetterCollapseActive) {
+            if (!isLetterCollapseActive && auraParticles.length === 0) {
                 fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
                 return;
             }
 
-            fxCtx.fillStyle = 'rgba(0, 5, 0, 0.22)';
-            fxCtx.fillRect(0, 0, fxCanvas.width, fxCanvas.height);
+            if (isLetterCollapseActive) {
+                fxCtx.fillStyle = 'rgba(0, 5, 0, 0.22)';
+                fxCtx.fillRect(0, 0, fxCanvas.width, fxCanvas.height);
+            } else {
+                fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+            }
 
-            letterRainParticles.forEach(p => {
-                if (p.isSignature) {
-                    // Las letras del nombre caen por gravedad hasta apilarse en el centro
-                    p.x += (p.targetX - p.x) * 0.06;
-                    if (p.y < p.targetY) {
-                        p.vy += 0.45;
-                        p.y += p.vy;
+            if (isLetterCollapseActive) {
+                letterRainParticles.forEach(p => {
+                    if (p.isSignature) {
+                        // Las letras del nombre caen por gravedad hasta apilarse en el centro
+                        p.x += (p.targetX - p.x) * 0.06;
+                        if (p.y < p.targetY) {
+                            p.vy += 0.45;
+                            p.y += p.vy;
+                        } else {
+                            p.y = p.targetY;
+                            p.vy = 0;
+                        }
+                        fxCtx.save();
+                        fxCtx.font = `bold ${p.size}px "Fira Code", monospace`;
+                        fxCtx.fillStyle = '#00ff41';
+                        fxCtx.shadowBlur = 18;
+                        fxCtx.shadowColor = '#00ff41';
+                        fxCtx.textAlign = 'center';
+                        fxCtx.fillText(p.char, p.x, p.y);
+                        fxCtx.restore();
                     } else {
-                        p.y = p.targetY;
-                        p.vy = 0;
+                        // Cascada de letras de fondo
+                        p.y += p.vy;
+                        p.x += p.vx;
+                        if (p.y > fxCanvas.height + 20) {
+                            p.y = -20;
+                            p.x = Math.random() * fxCanvas.width;
+                        }
+                        fxCtx.font = `${p.size}px "Fira Code", monospace`;
+                        fxCtx.fillStyle = 'rgba(0, 255, 65, 0.65)';
+                        fxCtx.fillText(p.char, p.x, p.y);
                     }
-                    fxCtx.save();
-                    fxCtx.font = `bold ${p.size}px "Fira Code", monospace`;
-                    fxCtx.fillStyle = '#00ff41';
-                    fxCtx.shadowBlur = 18;
-                    fxCtx.shadowColor = '#00ff41';
-                    fxCtx.textAlign = 'center';
-                    fxCtx.fillText(p.char, p.x, p.y);
-                    fxCtx.restore();
-                } else {
-                    // Cascada de letras de fondo
-                    p.y += p.vy;
-                    p.x += p.vx;
-                    if (p.y > fxCanvas.height + 20) {
-                        p.y = -20;
-                        p.x = Math.random() * fxCanvas.width;
-                    }
-                    fxCtx.font = `${p.size}px "Fira Code", monospace`;
-                    fxCtx.fillStyle = 'rgba(0, 255, 65, 0.65)';
-                    fxCtx.fillText(p.char, p.x, p.y);
+                });
+            }
+
+            for (let i = auraParticles.length - 1; i >= 0; i--) {
+                const particle = auraParticles[i];
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.vy += particle.gravity;
+                particle.vx *= 0.992;
+                particle.rotation += particle.spin;
+                particle.alpha -= 0.012;
+
+                if (particle.alpha <= 0) {
+                    auraParticles.splice(i, 1);
+                    continue;
                 }
-            });
+
+                fxCtx.save();
+                fxCtx.globalAlpha = particle.alpha;
+                fxCtx.translate(particle.x, particle.y);
+                fxCtx.rotate(particle.rotation);
+                fxCtx.fillStyle = particle.color;
+                fxCtx.shadowBlur = 8;
+                fxCtx.shadowColor = particle.color;
+                fxCtx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size);
+                fxCtx.restore();
+            }
         }
 
         /* =========================================================================
