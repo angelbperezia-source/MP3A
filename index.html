@@ -452,7 +452,10 @@
 <body class="min-h-screen flex flex-col justify-between relative selection:bg-emerald-500 selection:text-black mobile-view-music">
 
     <div id="party-background-layer" class="fixed inset-0 z-0 hidden overflow-hidden pointer-events-none" aria-hidden="true">
-        <img id="party-background-image" class="hidden h-full w-full object-cover opacity-60">
+        <picture class="block h-full w-full">
+            <source id="mobile-synthwave-background-source" media="not all" srcset="./background-synthwave-mobile.jpg">
+            <img id="party-background-image" class="hidden h-full w-full object-cover opacity-60">
+        </picture>
         <video id="party-background-video" class="hidden h-full w-full object-cover opacity-60" muted loop playsinline></video>
         <div id="party-background-overlay" class="absolute inset-0 bg-black/35"></div>
     </div>
@@ -481,14 +484,6 @@
         <button onclick="restoreCollapsedPage()" class="px-6 py-3 bg-green-500 text-black font-mono font-bold text-sm sm:text-base border-2 border-white shadow-[0_0_25px_#00ff41] hover:scale-105 transition flex items-center gap-2">
             <i class="fa-solid fa-rotate-left"></i> RECONSTRUIR SISTEMA [REBOOT]
         </button>
-    </div>
-
-    <!-- Notificación Toast Flotante -->
-    <div id="toast-box" class="fixed top-4 right-4 z-50 transform translate-x-full opacity-0 transition-all duration-300 pointer-events-none">
-        <div class="theme-card px-4 py-3 flex items-center gap-3 text-xs sm:text-sm font-bold">
-            <i id="toast-icon" class="fa-solid fa-bolt text-lg" style="color: var(--accent);"></i>
-            <span id="toast-msg">Tema actualizado</span>
-        </div>
     </div>
 
     <!-- HEADER & SELECTOR DE TEMAS -->
@@ -970,13 +965,9 @@
         }
 
         function showToast(msg, iconClass = 'fa-bolt') {
-            const box = document.getElementById('toast-box');
-            document.getElementById('toast-msg').textContent = msg;
-            document.getElementById('toast-icon').className = `fa-solid ${iconClass} text-lg`;
-            box.classList.remove('translate-x-full', 'opacity-0');
-            setTimeout(() => {
-                box.classList.add('translate-x-full', 'opacity-0');
-            }, 2600);
+            if (iconClass === 'fa-circle-exclamation' || iconClass === 'fa-triangle-exclamation' || iconClass === 'fa-lock') {
+                console.error(msg);
+            }
         }
 
         function setMobileView(view) {
@@ -1026,6 +1017,9 @@
             document.body.classList.toggle('theme-background-active', showPartyBackground);
 
             const customSynthwaveBackground = theme === 'synthwave' && Boolean(partyBackgroundUrl);
+            mobileSynthwaveBackgroundSource.media = theme === 'synthwave' && !partyBackgroundUrl
+                ? '(max-width: 640px)'
+                : 'not all';
             const backgroundVideo = customSynthwaveBackground && partyBackgroundIsVideo
                 ? partyBackgroundUrl
                 : themeVideoBackground;
@@ -2603,6 +2597,7 @@
         const auraParticles = [];
         const partyBackgroundLayer = document.getElementById('party-background-layer');
         const partyBackgroundImage = document.getElementById('party-background-image');
+        const mobileSynthwaveBackgroundSource = document.getElementById('mobile-synthwave-background-source');
         const partyBackgroundVideo = document.getElementById('party-background-video');
         const partyBackgroundInput = document.getElementById('party-background-upload');
         const partyBackgroundClearButton = document.getElementById('party-background-clear');

@@ -1,5 +1,5 @@
-const SHELL_CACHE = 'mp3a-shell-v5';
-const ASSET_CACHE = 'mp3a-assets-v5';
+const SHELL_CACHE = 'mp3a-shell-v6';
+const ASSET_CACHE = 'mp3a-assets-v6';
 const APP_SCOPE = self.registration.scope;
 const APP_SHELL_URLS = [
     new URL('./', APP_SCOPE).href,
@@ -17,6 +17,7 @@ const APP_SHELL_URLS = [
     new URL('./Synthwave.jpg', APP_SCOPE).href,
     new URL('./comic.jpg', APP_SCOPE).href,
     new URL('./background-synthwave.jpg', APP_SCOPE).href,
+    new URL('./background-synthwave-mobile.jpg', APP_SCOPE).href,
     new URL('./background-hacker.mp4', APP_SCOPE).href,
     new URL('./background-retro.png', APP_SCOPE).href,
     new URL('./background-comic.jpg', APP_SCOPE).href
