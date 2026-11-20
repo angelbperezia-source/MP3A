@@ -1,0 +1,27 @@
+MP3 A STUDIO — ACTUALIZACIÓN DE VISUALIZADORES Y CARGA DE JAVASCRIPT
+
+ARCHIVOS NECESARIOS (LOS TRES DEBEN ESTAR EN LA MISMA CARPETA)
+1. index.html — página principal.
+2. app.js — código JavaScript separado que controla el reproductor, visualizadores y temas.
+3. service-worker.js — actualizador y caché offline (versión v4).
+
+INSTALACIÓN
+- Haz una copia de seguridad de los archivos anteriores.
+- Reemplaza index.html y service-worker.js.
+- Añade app.js en la misma carpeta, junto a index.html.
+- No cambies el nombre app.js ni lo coloques en otra carpeta.
+- Conserva manifest.webmanifest, ICONO NEW.jpg, LOGO 1.png, RETRO.jpg, CRISTAL.jpg, HACKER.jpg, Synthwave.jpg, comic.jpg y los demás recursos de la app.
+- Publica/sube los TRES archivos juntos. Abre la web con conexión y recarga con Ctrl + F5 (Windows).
+- Si la aplicación ya estaba instalada, ciérrala por completo y vuelve a abrirla con conexión para que tome la nueva caché.
+
+COMPROBACIÓN RÁPIDA
+- Abre directamente en el navegador la dirección de tu web seguida de /app.js.
+- Debe aparecer código JavaScript, no una página 404 ni el HTML de la aplicación.
+- Si app.js no carga, index.html muestra un aviso rojo explicando el problema.
+
+MEJORAS
+- Cinco modos: Espectro, Onda, Espejo, Radial y Partículas.
+- Selector táctil y cambio de modo deslizando sobre el visualizador.
+- Ampliación a pantalla completa.
+- Canvas adaptado a densidad de pantalla y límite de 30 FPS en móviles.
+- Paletas vinculadas a cada tema y atmósferas CSS diferenciadas.

@@ -1,9 +1,10 @@
-const SHELL_CACHE = 'mp3a-shell-v2';
-const ASSET_CACHE = 'mp3a-assets-v2';
+const SHELL_CACHE = 'mp3a-shell-v4';
+const ASSET_CACHE = 'mp3a-assets-v4';
 const APP_SCOPE = self.registration.scope;
 const APP_SHELL_URLS = [
     new URL('./', APP_SCOPE).href,
     new URL('./index.html', APP_SCOPE).href,
+    new URL('./app.js', APP_SCOPE).href,
     new URL('./manifest.webmanifest', APP_SCOPE).href,
     new URL('./app-icon.svg', APP_SCOPE).href,
     new URL('./app-icon-180.png', APP_SCOPE).href,
@@ -84,7 +85,19 @@ async function preloadExternalAsset(url, cache) {
 self.addEventListener('install', event => {
     event.waitUntil((async () => {
         const shellCache = await caches.open(SHELL_CACHE);
-        await shellCache.addAll(APP_SHELL_URLS);
+        const requiredAppFiles = [
+            new URL('./index.html', APP_SCOPE).href,
+            new URL('./app.js', APP_SCOPE).href
+        ];
+
+        // La página y su JavaScript son imprescindibles; los demás recursos son opcionales.
+        await shellCache.addAll(requiredAppFiles);
+        const optionalFiles = APP_SHELL_URLS.filter(url => !requiredAppFiles.includes(url));
+        await Promise.allSettled(optionalFiles.map(async url => {
+            const request = new Request(url, { cache: 'reload' });
+            const response = await fetch(request);
+            await saveResponse(shellCache, request, response);
+        }));
 
         const assetCache = await caches.open(ASSET_CACHE);
         await Promise.allSettled(EXTERNAL_PRELOAD_URLS.map(url => preloadExternalAsset(url, assetCache)));
