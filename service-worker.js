@@ -1,10 +1,9 @@
-const SHELL_CACHE = 'mp3a-shell-v4';
-const ASSET_CACHE = 'mp3a-assets-v4';
+const SHELL_CACHE = 'mp3a-shell-v5';
+const ASSET_CACHE = 'mp3a-assets-v5';
 const APP_SCOPE = self.registration.scope;
 const APP_SHELL_URLS = [
     new URL('./', APP_SCOPE).href,
     new URL('./index.html', APP_SCOPE).href,
-    new URL('./app.js', APP_SCOPE).href,
     new URL('./manifest.webmanifest', APP_SCOPE).href,
     new URL('./app-icon.svg', APP_SCOPE).href,
     new URL('./app-icon-180.png', APP_SCOPE).href,
@@ -16,7 +15,11 @@ const APP_SHELL_URLS = [
     new URL('./CRISTAL.jpg', APP_SCOPE).href,
     new URL('./HACKER.jpg', APP_SCOPE).href,
     new URL('./Synthwave.jpg', APP_SCOPE).href,
-    new URL('./comic.jpg', APP_SCOPE).href
+    new URL('./comic.jpg', APP_SCOPE).href,
+    new URL('./background-synthwave.jpg', APP_SCOPE).href,
+    new URL('./background-hacker.mp4', APP_SCOPE).href,
+    new URL('./background-retro.png', APP_SCOPE).href,
+    new URL('./background-comic.jpg', APP_SCOPE).href
 ];
 const EXTERNAL_ORIGINS = new Set([
     'https://cdn.tailwindcss.com',
@@ -85,19 +88,7 @@ async function preloadExternalAsset(url, cache) {
 self.addEventListener('install', event => {
     event.waitUntil((async () => {
         const shellCache = await caches.open(SHELL_CACHE);
-        const requiredAppFiles = [
-            new URL('./index.html', APP_SCOPE).href,
-            new URL('./app.js', APP_SCOPE).href
-        ];
-
-        // La página y su JavaScript son imprescindibles; los demás recursos son opcionales.
-        await shellCache.addAll(requiredAppFiles);
-        const optionalFiles = APP_SHELL_URLS.filter(url => !requiredAppFiles.includes(url));
-        await Promise.allSettled(optionalFiles.map(async url => {
-            const request = new Request(url, { cache: 'reload' });
-            const response = await fetch(request);
-            await saveResponse(shellCache, request, response);
-        }));
+        await shellCache.addAll(APP_SHELL_URLS);
 
         const assetCache = await caches.open(ASSET_CACHE);
         await Promise.allSettled(EXTERNAL_PRELOAD_URLS.map(url => preloadExternalAsset(url, assetCache)));

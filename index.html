@@ -62,6 +62,9 @@
             transform: translateY(3px);
             box-shadow: 0 1px 0 rgba(35, 29, 48, 0.8) !important;
         }
+        body.theme-retro.theme-background-active .theme-card {
+            background: rgba(26, 28, 44, 0.86);
+        }
 
         /* ================= TEMA: CRISTAL (ICE GLASSMORPHISM) ================= */
         body.theme-cristal {
@@ -100,6 +103,9 @@
         body.theme-hacker .theme-card {
             border: 1px solid #00ff41 !important;
             box-shadow: 0 0 12px rgba(0, 255, 65, 0.15) !important;
+        }
+        body.theme-hacker.theme-background-active .theme-card {
+            background: rgba(0, 20, 0, 0.84);
         }
 
         /* ================= TEMA: SYNTHWAVE (80s NEON) ================= */
@@ -153,6 +159,12 @@
             border: 4px solid #000000 !important;
             box-shadow: 8px 8px 0px #000000 !important;
             color: #000000 !important;
+        }
+        body.theme-comic.theme-background-active .theme-card {
+            background: rgba(255, 255, 255, 0.86);
+        }
+        body.theme-comic.theme-background-active #party-background-overlay {
+            background-color: rgba(255, 255, 255, 0.2);
         }
         body.theme-comic button {
             border: 3px solid #000000 !important;
@@ -421,244 +433,28 @@
         }
         button:focus-visible, input:focus-visible, select:focus-visible, label:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
         @media (prefers-reduced-motion: reduce) { * { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
-
-
-        /* ================= VISUALIZADORES MULTIMODO + EXPERIENCIA MÓVIL ================= */
-        .visualizer-card {
-            display: flex;
-            flex-direction: column;
-            gap: .55rem;
-            isolation: isolate;
-        }
-        .visualizer-heading { position: relative; z-index: 2; }
-        .visualizer-modebar {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            gap: .45rem;
-            width: 100%;
-            overflow-x: auto;
-            overscroll-behavior-inline: contain;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            padding: .12rem .08rem .32rem;
-        }
-        .visualizer-modebar::-webkit-scrollbar { display: none; }
-        .vis-mode-btn {
-            display: inline-flex;
-            flex: 0 0 auto;
-            align-items: center;
-            justify-content: center;
-            gap: .45rem;
-            min-width: 90px;
-            min-height: 40px;
-            padding: .55rem .8rem;
-            border: 1px solid var(--border-color);
-            border-radius: 999px;
-            color: var(--text-secondary);
-            background: color-mix(in srgb, var(--bg-secondary) 82%, transparent);
-            font: 700 10px/1 var(--font-main);
-            letter-spacing: .015em;
-            white-space: nowrap;
-            touch-action: manipulation;
-            transition: color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease;
-        }
-        .vis-mode-btn i { font-size: 12px; }
-        .vis-mode-btn:hover { color: var(--text-primary); border-color: var(--accent); transform: translateY(-1px); }
-        .vis-mode-btn.is-active,
-        .vis-mode-btn[aria-pressed="true"] {
-            color: #071018;
-            border-color: var(--accent);
-            background: var(--accent);
-            box-shadow: 0 0 18px var(--accent-glow);
-        }
-        body.theme-hacker .vis-mode-btn.is-active { color: #001b06; }
-        body.theme-retro .vis-mode-btn { border-radius: 3px; box-shadow: 2px 2px 0 #000; }
-        body.theme-comic .vis-mode-btn { border: 2px solid #000; box-shadow: 3px 3px 0 #000; }
-
-        .visualizer-stage {
-            height: 178px;
-            min-height: 150px;
-            background:
-                radial-gradient(ellipse at 50% 105%, color-mix(in srgb, var(--accent) 25%, transparent), transparent 60%),
-                linear-gradient(145deg, #080b16, #05060b 72%);
-            border: 1px solid color-mix(in srgb, var(--accent) 48%, transparent);
-            box-shadow: inset 0 0 32px rgba(0,0,0,.42), 0 0 24px color-mix(in srgb, var(--accent) 12%, transparent);
-            contain: layout paint;
-            touch-action: pan-y;
-        }
-        .visualizer-stage canvas { position: absolute; inset: 0; z-index: 1; }
-        .visualizer-stage-shine {
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-            pointer-events: none;
-            opacity: .34;
-            background: linear-gradient(115deg, transparent 15%, rgba(255,255,255,.08) 50%, transparent 78%);
-            transform: translateX(-110%);
-            animation: visualizer-shine 8s ease-in-out infinite;
-        }
-        @keyframes visualizer-shine {
-            0%, 62% { transform: translateX(-110%); }
-            100% { transform: translateX(110%); }
-        }
-        .visualizer-live-label,
-        .visualizer-stage-footer {
-            position: absolute;
-            z-index: 3;
-            pointer-events: none;
-            color: rgba(226,232,240,.72);
-            font: 700 8px/1.2 'Fira Code', monospace;
-            letter-spacing: .14em;
-            text-shadow: 0 1px 5px #000;
-        }
-        .visualizer-live-label { left: 12px; top: 10px; display: inline-flex; align-items: center; gap: 6px; }
-        .visualizer-live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
-        .visualizer-stage-footer { left: 12px; right: 12px; bottom: 9px; display: flex; justify-content: space-between; opacity: .7; }
-        .visualizer-expand-button {
-            position: absolute;
-            z-index: 5;
-            top: 8px;
-            right: 8px;
-            display: grid;
-            width: 36px;
-            height: 36px;
-            min-height: 36px;
-            place-items: center;
-            border: 1px solid rgba(255,255,255,.18);
-            border-radius: 10px;
-            color: white;
-            background: rgba(4,8,16,.55);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-        .visualizer-expand-button:hover { border-color: var(--accent); box-shadow: 0 0 16px var(--accent-glow); }
-        .visualizer-stage:fullscreen {
-            width: 100vw;
-            height: 100dvh;
-            min-height: 100dvh;
-            border: 0;
-            border-radius: 0;
-            background: #03040a;
-        }
-        #visualizer-card.visualizer-expanded {
-            position: fixed;
-            z-index: 120;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            gap: .85rem;
-            width: 100vw;
-            height: 100dvh;
-            max-height: 100dvh;
-            margin: 0;
-            padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
-            border-radius: 0;
-            background: var(--bg-primary);
-        }
-        #visualizer-card.visualizer-expanded .visualizer-stage { flex: 1; height: auto; min-height: 0; }
-        #visualizer-card.visualizer-expanded .visualizer-modebar { flex-wrap: wrap; overflow: visible; }
-
-        /* Atmósfera dinámica independiente para cada tema */
-        #theme-game-wrapper { isolation: isolate; }
-        #theme-game-wrapper::before,
-        #theme-game-wrapper::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
-        #theme-game-wrapper > .game-panel { position: relative; z-index: 1; }
-        body.theme-retro #theme-game-wrapper {
-            background-image: linear-gradient(rgba(7,10,32,.12), rgba(7,10,32,.12)), repeating-linear-gradient(0deg, transparent 0 7px, rgba(255,255,255,.025) 7px 8px);
-        }
-        body.theme-retro #theme-game-wrapper::before {
-            opacity: .22;
-            background-image: linear-gradient(90deg, transparent 49.5%, rgba(255,205,117,.18) 50%, transparent 50.5%), linear-gradient(transparent 49.5%, rgba(255,205,117,.14) 50%, transparent 50.5%);
-            background-size: 28px 28px;
-            mask-image: linear-gradient(to bottom, transparent, #000 35%, transparent);
-        }
-        body.theme-cristal #theme-game-wrapper {
-            background-image: radial-gradient(ellipse at 8% 0%, rgba(125,211,252,.2), transparent 46%), radial-gradient(ellipse at 94% 100%, rgba(34,211,238,.15), transparent 42%);
-        }
-        body.theme-cristal #theme-game-wrapper::before {
-            opacity: .36;
-            background: linear-gradient(112deg, transparent 22%, rgba(255,255,255,.18) 48%, transparent 56%);
-            transform: translateX(-100%);
-            animation: crystal-glide 9s ease-in-out infinite;
-        }
-        @keyframes crystal-glide {
-            0%, 58% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        body.theme-hacker #theme-game-wrapper {
-            background-image: radial-gradient(ellipse at 50% 0%, rgba(0,255,65,.11), transparent 60%), repeating-linear-gradient(0deg, rgba(0,255,65,.035) 0 1px, transparent 1px 5px);
-        }
-        body.theme-hacker #theme-game-wrapper::before {
-            opacity: .24;
-            background: repeating-linear-gradient(90deg, transparent 0 31px, rgba(0,255,65,.12) 32px, transparent 33px 64px);
-            animation: hacker-columns 13s linear infinite;
-        }
-        @keyframes hacker-columns { from { transform: translateY(-24px); } to { transform: translateY(24px); } }
-        body.theme-synthwave #theme-game-wrapper {
-            background-image: radial-gradient(ellipse at 50% 0%, rgba(185,103,255,.22), transparent 58%), linear-gradient(180deg, rgba(13,2,33,.35), rgba(20,5,36,.78));
-        }
-        body.theme-synthwave #theme-game-wrapper::before {
-            inset: 34% -12% -34%;
-            opacity: .24;
-            background-image: linear-gradient(rgba(255,113,206,.5) 1px, transparent 1px), linear-gradient(90deg, rgba(1,205,254,.42) 1px, transparent 1px);
-            background-size: 34px 24px;
-            transform: perspective(300px) rotateX(58deg);
-            transform-origin: center bottom;
-            mask-image: linear-gradient(to top, #000, transparent 90%);
-        }
-        body.theme-comic #theme-game-wrapper {
-            background-image: radial-gradient(circle at 12% 16%, rgba(239,68,68,.13), transparent 28%), radial-gradient(circle at 88% 82%, rgba(37,99,235,.12), transparent 30%);
-        }
-        body.theme-comic #theme-game-wrapper::before {
-            opacity: .17;
-            background-image: radial-gradient(#000 1px, transparent 1.5px);
-            background-size: 12px 12px;
-            mask-image: radial-gradient(ellipse at center, #000, transparent 78%);
-        }
-        body.theme-retro .visualizer-stage { border: 3px solid #fff; border-radius: 3px; box-shadow: 5px 5px 0 #000; }
-        body.theme-cristal .visualizer-stage { backdrop-filter: blur(12px); box-shadow: inset 0 0 28px rgba(186,230,253,.12), 0 0 28px rgba(56,189,248,.2); }
-        body.theme-hacker .visualizer-stage { border-color: rgba(0,255,65,.72); box-shadow: inset 0 0 28px rgba(0,255,65,.12), 0 0 20px rgba(0,255,65,.13); }
-        body.theme-synthwave .visualizer-stage { border-color: rgba(255,113,206,.75); box-shadow: inset 0 0 32px rgba(185,103,255,.13), 0 0 24px rgba(255,113,206,.18); }
-        body.theme-comic .visualizer-stage { border: 3px solid #000; border-radius: 4px; box-shadow: 6px 6px 0 #000; }
-
-        @media (max-width: 640px) {
-            .visualizer-card { gap: .65rem; padding: .8rem; }
-            .visualizer-heading { align-items: flex-start; }
-            #visualizer-status { max-width: 100%; font-size: 9px; }
-            .visualizer-modebar { gap: .4rem; margin-inline: -1px; width: calc(100% + 2px); }
-            .vis-mode-btn { min-width: 84px; min-height: 44px; padding: .6rem .72rem; font-size: 10px; }
-            .visualizer-stage { height: clamp(220px, 43svh, 390px); min-height: 220px; }
-            body.mobile-view-visualizer #visualizer-card { min-height: min(620px, calc(100dvh - 170px)); }
-            body.mobile-view-visualizer .visualizer-stage { flex: 1; height: auto; min-height: min(48svh, 430px); }
-            .visualizer-live-label, .visualizer-stage-footer { font-size: 7px; }
-            .visualizer-expand-button { width: 42px; height: 42px; min-height: 42px; }
-            #visualizer-card.visualizer-expanded .visualizer-stage { min-height: 0; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .visualizer-stage-shine,
-            body.theme-cristal #theme-game-wrapper::before,
-            body.theme-hacker #theme-game-wrapper::before { animation: none !important; }
-        }
-
-
-        #js-load-warning { position: fixed; z-index: 99999; inset: 0 0 auto; padding: .85rem 1rem; background: #7f1d1d; color: #fff; font: 600 13px/1.45 Arial, sans-serif; text-align: center; box-shadow: 0 4px 18px rgba(0,0,0,.35); }
+        .vis-mode-btn{min-height:32px!important;padding:4px 10px;border-radius:999px;border:1px solid var(--border-color);font-size:11px;font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:5px;transition:transform .15s,background .15s}
+        .vis-mode-btn:active{transform:scale(.94)}
+        #vis-modes{scrollbar-width:none} #vis-modes::-webkit-scrollbar{display:none}
+        #visualizer-stage{touch-action:pan-y;transition:box-shadow .4s}
+        #visualizer-stage::after{content:"";position:absolute;inset:0;pointer-events:none}
+        #visualizer-stage[data-vis="hacker"]::after{background:repeating-linear-gradient(0deg,rgba(0,255,65,.08) 0 1px,transparent 1px 3px);animation:vis-scan 6s linear infinite}
+        #visualizer-stage[data-vis="synthwave"]{background:linear-gradient(#140524,#3b0a5c 70%,#ff71ce44)!important;box-shadow:inset 0 -18px 30px -18px #ff71ce}
+        #visualizer-stage[data-vis="synthwave"]::after{background:repeating-linear-gradient(90deg,rgba(1,205,254,.14) 0 1px,transparent 1px 28px);-webkit-mask-image:linear-gradient(transparent 40%,#000);mask-image:linear-gradient(transparent 40%,#000)}
+        #visualizer-stage[data-vis="cristal"]{background:linear-gradient(160deg,rgba(186,230,253,.25),rgba(12,36,60,.55))!important;backdrop-filter:blur(6px)}
+        #visualizer-stage[data-vis="retro"]{background:#1a1c2c!important}
+        #visualizer-stage[data-vis="retro"] canvas{image-rendering:pixelated}
+        #visualizer-stage[data-vis="comic"]{background:radial-gradient(#00000022 1.5px,transparent 1.6px) 0 0/10px 10px,#fff7b0!important;border:3px solid #000}
+        #visualizer-stage:fullscreen{height:100vh!important;border-radius:0}
+        @keyframes vis-scan{to{background-position:0 60px}}
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between relative selection:bg-emerald-500 selection:text-black mobile-view-music">
-    <div id="js-load-warning" role="alert">No se pudo cargar el archivo app.js. Comprueba que index.html, app.js y service-worker.js estén en la misma carpeta y vuelve a cargar la página.</div>
-
 
     <div id="party-background-layer" class="fixed inset-0 z-0 hidden overflow-hidden pointer-events-none" aria-hidden="true">
         <img id="party-background-image" class="hidden h-full w-full object-cover opacity-60">
         <video id="party-background-video" class="hidden h-full w-full object-cover opacity-60" muted loop playsinline></video>
-        <div class="absolute inset-0 bg-black/35"></div>
+        <div id="party-background-overlay" class="absolute inset-0 bg-black/35"></div>
     </div>
 
     <!-- Canvas Global de Fuegos Artificiales (Synthwave) y Derrumbe de Letras (Hacker) -->
@@ -852,48 +648,17 @@
         <!-- COLUMNA DERECHA: VISUALIZADOR + APARTADO DINÁMICO DE MINIJUEGOS POR TEMA (7 COLS) -->
         <section class="lg:col-span-7 flex flex-col gap-4">
 
-            <!-- VISUALIZADOR MULTIMODO: OPTIMIZADO PARA ESCRITORIO Y MÓVILES -->
-            <div id="visualizer-card" class="theme-card visualizer-card p-3 sm:p-4 relative overflow-hidden collapsible-block">
-                <div class="visualizer-heading flex flex-wrap justify-between items-center gap-2 mb-2 px-1">
-                    <div class="min-w-0">
-                        <span class="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5">
-                            <i class="fa-solid fa-wave-square" style="color: var(--accent);"></i>
-                            Visualizadores de Audio
-                        </span>
-                        <p class="text-[10px] opacity-65 mt-0.5">Cinco estilos reactivos · desliza para elegir en el celular</p>
-                    </div>
-                    <span id="visualizer-status" class="text-[10px] opacity-75" role="status" aria-live="polite">Modo ambiente · carga música para activar</span>
+            <!-- Visualizador de Frecuencias -->
+            <div id="visualizer-card" class="theme-card p-3 relative overflow-hidden collapsible-block">
+                <div class="flex justify-between items-center mb-1.5 px-1">
+                    <span class="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-simple" style="color: var(--accent);"></i> Visualizador de Espectro
+                    </span>
+                    <span id="visualizer-status" class="text-[10px] opacity-75">Se activa al reproducir música local</span>
                 </div>
-
-                <div id="visualizer-modebar" class="visualizer-modebar" role="toolbar" aria-label="Elegir estilo de visualización">
-                    <button type="button" class="vis-mode-btn is-active" data-visualizer-mode="spectrum" aria-pressed="true">
-                        <i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Espectro</span>
-                    </button>
-                    <button type="button" class="vis-mode-btn" data-visualizer-mode="wave" aria-pressed="false">
-                        <i class="fa-solid fa-wave-square" aria-hidden="true"></i><span>Onda</span>
-                    </button>
-                    <button type="button" class="vis-mode-btn" data-visualizer-mode="mirror" aria-pressed="false">
-                        <i class="fa-solid fa-arrows-left-right-to-line" aria-hidden="true"></i><span>Espejo</span>
-                    </button>
-                    <button type="button" class="vis-mode-btn" data-visualizer-mode="radial" aria-pressed="false">
-                        <i class="fa-solid fa-circle-notch" aria-hidden="true"></i><span>Radial</span>
-                    </button>
-                    <button type="button" class="vis-mode-btn" data-visualizer-mode="particles" aria-pressed="false">
-                        <i class="fa-solid fa-sparkles" aria-hidden="true"></i><span>Partículas</span>
-                    </button>
-                </div>
-
-                <div id="visualizer-stage" class="visualizer-stage w-full rounded-xl overflow-hidden relative" tabindex="0" aria-label="Visualización animada de la música">
-                    <canvas id="visualizer-canvas" class="w-full h-full block" aria-hidden="true"></canvas>
-                    <div class="visualizer-stage-shine" aria-hidden="true"></div>
-                    <span id="visualizer-live-label" class="visualizer-live-label"><span class="visualizer-live-dot"></span> AUDIO VISUALIZER</span>
-                    <button id="visualizer-expand-button" type="button" class="visualizer-expand-button" onclick="toggleVisualizerExpand()" aria-label="Ampliar visualizador" aria-pressed="false" title="Pantalla completa">
-                        <i class="fa-solid fa-expand" aria-hidden="true"></i>
-                    </button>
-                    <div class="visualizer-stage-footer" aria-hidden="true">
-                        <span id="visualizer-mode-name">ESPECTRO</span>
-                        <span>MP3 A STUDIO</span>
-                    </div>
+                <div id="vis-modes" class="flex items-center gap-1.5 mb-1.5 px-1 overflow-x-auto" role="group" aria-label="Modo del visualizador"></div>
+                <div id="visualizer-stage" class="w-full h-36 sm:h-44 rounded-lg overflow-hidden bg-black/40 relative">
+                    <canvas id="visualizer-canvas" class="w-full h-full block"></canvas>
                 </div>
             </div>
 
@@ -1162,6 +927,1975 @@
         </button>
     </nav>
 
-    <script src="./app.js" defer></script>
+    <script>
+        /* =========================================================================
+           1. ESTADO GLOBAL, LOGOS POR TEMA Y GESTIÓN DE TEMAS
+           ========================================================================= */
+        let currentTheme = 'default';
+        let currentMobileView = 'music';
+        let isPlaying = false;
+        let currentTrackIndex = -1;
+        let bassEnergy = 0;
+        let playbackRate = 1.0;
+
+        const THEME_LOGOS = {
+            default: './ICONO NEW.jpg',
+            retro: './RETRO.jpg',
+            cristal: './CRISTAL.jpg',
+            hacker: './HACKER.jpg',
+            synthwave: './Synthwave.jpg',
+            comic: './comic.jpg'
+        };
+
+        const THEME_BACKGROUNDS = {
+            retro: './background-retro.png',
+            synthwave: './background-synthwave.jpg',
+            comic: './background-comic.jpg'
+        };
+
+        const THEME_BACKGROUND_VIDEOS = {
+            hacker: './background-hacker.mp4'
+        };
+
+        const tracks = [];
+
+        function applyBrandLogoForTheme(theme) {
+            const logoImg = document.getElementById('brand-logo-img');
+            const nextLogo = THEME_LOGOS[theme] || './ICONO NEW.jpg';
+            logoImg.onerror = () => {
+                logoImg.onerror = null;
+                logoImg.src = './ICONO NEW.jpg';
+            };
+            logoImg.src = nextLogo;
+        }
+
+        function showToast(msg, iconClass = 'fa-bolt') {
+            const box = document.getElementById('toast-box');
+            document.getElementById('toast-msg').textContent = msg;
+            document.getElementById('toast-icon').className = `fa-solid ${iconClass} text-lg`;
+            box.classList.remove('translate-x-full', 'opacity-0');
+            setTimeout(() => {
+                box.classList.add('translate-x-full', 'opacity-0');
+            }, 2600);
+        }
+
+        function setMobileView(view) {
+            currentMobileView = view;
+            document.body.classList.remove('mobile-view-music', 'mobile-view-visualizer', 'mobile-view-themes', 'mobile-player-expanded');
+            document.body.classList.add(`mobile-view-${view}`);
+            document.querySelectorAll('.mobile-nav-button').forEach(button => {
+                if (button.dataset.mobileView === view) {
+                    button.setAttribute('aria-current', 'page');
+                } else {
+                    button.removeAttribute('aria-current');
+                }
+            });
+        }
+
+        function toggleMobilePlayer() {
+            if (currentTrackIndex < 0 || currentTrackIndex >= tracks.length) return;
+            if (document.body.classList.contains('mobile-player-expanded')) {
+                document.body.classList.remove('mobile-player-expanded');
+            } else {
+                setMobileView('music');
+                document.body.classList.add('mobile-player-expanded');
+            }
+        }
+
+        function updateMobilePlayer() {
+            const player = document.getElementById('mobile-mini-player');
+            const hasTrack = currentTrackIndex >= 0 && currentTrackIndex < tracks.length;
+            player.classList.toggle('hidden', !hasTrack);
+            if (!hasTrack) return;
+            const track = tracks[currentTrackIndex];
+            document.getElementById('mobile-track-cover').src = track.cover || THEME_LOGOS[currentTheme] || './ICONO NEW.jpg';
+            document.getElementById('mobile-track-title').textContent = track.title;
+            document.getElementById('mobile-track-artist').textContent = track.artist;
+        }
+
+        function setTheme(theme) {
+            currentTheme = theme;
+            document.body.className = `min-h-screen flex flex-col justify-between relative selection:bg-emerald-500 selection:text-black mobile-view-${currentMobileView} ${theme !== 'default' ? 'theme-' + theme : ''}`;
+            applyBrandLogoForTheme(theme);
+
+            const themeBackground = THEME_BACKGROUNDS[theme];
+            const themeVideoBackground = THEME_BACKGROUND_VIDEOS[theme];
+            const showPartyBackground = Boolean(themeBackground || themeVideoBackground) || (theme === 'synthwave' && Boolean(partyBackgroundUrl));
+            partyBackgroundLayer.classList.toggle('hidden', !showPartyBackground);
+            document.body.classList.toggle('party-background-active', showPartyBackground && theme === 'synthwave');
+            document.body.classList.toggle('theme-background-active', showPartyBackground);
+
+            const customSynthwaveBackground = theme === 'synthwave' && Boolean(partyBackgroundUrl);
+            const backgroundVideo = customSynthwaveBackground && partyBackgroundIsVideo
+                ? partyBackgroundUrl
+                : themeVideoBackground;
+            if (backgroundVideo) {
+                partyBackgroundImage.classList.add('hidden');
+                if (partyBackgroundVideo.getAttribute('src') !== backgroundVideo) {
+                    partyBackgroundVideo.src = backgroundVideo;
+                }
+                partyBackgroundVideo.classList.remove('hidden');
+                partyBackgroundVideo.play().catch(() => {
+                    showToast('No se pudo reproducir el video de fondo.', 'fa-circle-exclamation');
+                });
+            } else {
+                partyBackgroundVideo.pause();
+                partyBackgroundVideo.classList.add('hidden');
+                const backgroundImage = customSynthwaveBackground ? partyBackgroundUrl : themeBackground;
+                partyBackgroundImage.classList.toggle('hidden', !backgroundImage);
+                if (backgroundImage) partyBackgroundImage.src = backgroundImage;
+            }
+
+            document.querySelectorAll('.game-panel').forEach(p => p.classList.add('hidden'));
+            const activePanel = document.getElementById(`panel-${theme}`) || document.getElementById('panel-default');
+            activePanel.classList.remove('hidden');
+
+            if (theme === 'retro') {
+                showToast('Aventura Retro 8-bit lista para jugar', 'fa-gamepad');
+                resizeMarioCanvas();
+                resetMarioGame();
+            } else if (theme === 'cristal') {
+                showToast('Tema Cristal: ¡Rompe el Hielo activado!', 'fa-snowflake');
+                resizeIceCanvas();
+                initIceGame();
+            } else if (theme === 'hacker') {
+                showToast('Tema Hacker: Terminal de código lista', 'fa-terminal');
+                logTerminal('Módulo de intrusión cargado. Prueba "EXHIBIR CÓDIGO" o "DERRUMBAR".');
+            } else if (theme === 'synthwave') {
+                showToast('Tema Synthwave: ¡Fuegos artificiales sincronizados!', 'fa-fire');
+                resizeSynthwaveCanvas();
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => spawnFirework(true), i * 180);
+                }
+            } else if (theme === 'comic') {
+                showToast('Tema Cómic: ¡Modo Lápiz listo para dibujar!', 'fa-pencil');
+                resizeComicCanvas();
+            } else {
+                showToast('Tema Oscuro estándar activado', 'fa-moon');
+            }
+        }
+
+        /* =========================================================================
+           2. MOTOR DE AUDIO + BIBLIOTECA LOCAL POR PERMISOS (INDEXEDDB + FS API)
+           ========================================================================= */
+        let audioCtx = null;
+        let analyser = null;
+        let dataArray = null;
+        let customAudioEl = null;
+        let customSourceNode = null;
+        let progressTimer = null;
+        let directoryHandle = null;
+
+        const LIBRARY_DB_NAME = 'mp3_a_studio_library_v1';
+        const LIBRARY_STORE = 'handles';
+
+        function openLibraryDb() {
+            return new Promise((resolve, reject) => {
+                if (!('indexedDB' in window)) return reject(new Error('IndexedDB no disponible'));
+                const req = indexedDB.open(LIBRARY_DB_NAME, 1);
+                req.onupgradeneeded = () => {
+                    const db = req.result;
+                    if (!db.objectStoreNames.contains(LIBRARY_STORE)) {
+                        db.createObjectStore(LIBRARY_STORE);
+                    }
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function saveDirectoryHandle(handle) {
+            try {
+                const db = await openLibraryDb();
+                const tx = db.transaction(LIBRARY_STORE, 'readwrite');
+                tx.objectStore(LIBRARY_STORE).put(handle, 'music_dir');
+                await new Promise((res, rej) => {
+                    tx.oncomplete = res;
+                    tx.onerror = () => rej(tx.error);
+                });
+            } catch (_) {}
+        }
+
+        async function loadSavedDirectoryHandle() {
+            try {
+                const db = await openLibraryDb();
+                const tx = db.transaction(LIBRARY_STORE, 'readonly');
+                const req = tx.objectStore(LIBRARY_STORE).get('music_dir');
+                return await new Promise((res, rej) => {
+                    req.onsuccess = () => res(req.result || null);
+                    req.onerror = () => rej(req.error);
+                });
+            } catch (_) {
+                return null;
+            }
+        }
+
+        function isAudioFileNameOrType(file) {
+            if (file && file.type && file.type.startsWith('audio/')) return true;
+            return /\.(mp3|wav|ogg|m4a|aac|flac|opus|webm)$/i.test(file.name || '');
+        }
+
+        async function collectAudioFilesFromDir(dirHandle, depth = 0, out = []) {
+            if (depth > 3) return out;
+            for await (const [, entry] of dirHandle.entries()) {
+                if (entry.kind === 'file') {
+                    const file = await entry.getFile();
+                    if (isAudioFileNameOrType(file)) {
+                        out.push({ file, handle: entry });
+                    }
+                } else if (entry.kind === 'directory') {
+                    await collectAudioFilesFromDir(entry, depth + 1, out);
+                }
+            }
+            return out;
+        }
+
+        function setLibraryStatus(msg) {
+            const el = document.getElementById('library-permission-status');
+            if (el) el.textContent = msg;
+        }
+
+        async function ingestLocalAudioEntries(entries, sourceLabel = 'Biblioteca Local') {
+            if (!entries || !entries.length) {
+                showToast('No se encontraron archivos de audio en la selección', 'fa-circle-info');
+                return;
+            }
+            let firstAddedIndex = -1;
+            const existingKeys = new Set(tracks
+                .filter(t => t.localFile)
+                .map(t => `${t.localFile.name}|${t.localFile.size}|${t.localFile.lastModified}`));
+            let added = 0;
+            for (const item of entries) {
+                const file = item.file || item;
+                const key = `${file.name}|${file.size}|${file.lastModified}`;
+                if (existingKeys.has(key)) continue;
+                existingKeys.add(key);
+                const cleanTitle = file.name.replace(/\.[^/.]+$/, '');
+                tracks.push({
+                    title: cleanTitle,
+                    artist: sourceLabel,
+                    genre: 'Audio del Dispositivo',
+                    cover: THEME_LOGOS[currentTheme] || './ICONO NEW.jpg',
+                    duration: 0,
+                    localFile: file,
+                    fileHandle: item.handle || null
+                });
+                added++;
+                if (firstAddedIndex === -1) firstAddedIndex = tracks.length - 1;
+            }
+            renderPlaylist();
+            if (!added) {
+                setLibraryStatus('Las canciones seleccionadas ya están cargadas.');
+                showToast('No hay canciones nuevas para agregar', 'fa-circle-info');
+                return;
+            }
+            setLibraryStatus(`${added} ${added === 1 ? 'canción cargada' : 'canciones cargadas'} desde "${sourceLabel}".`);
+            showToast(`${added} ${added === 1 ? 'canción lista' : 'canciones listas'} para escuchar`, 'fa-music');
+            selectTrack(firstAddedIndex);
+            if (!isPlaying) {
+                togglePlay();
+            }
+        }
+
+        async function requestDeviceMusicAccess() {
+            if (typeof window.showDirectoryPicker === 'function') {
+                try {
+                    const handle = await window.showDirectoryPicker({ mode: 'read' });
+                    directoryHandle = handle;
+                    await saveDirectoryHandle(handle);
+                    const perm = await handle.requestPermission({ mode: 'read' });
+                    if (perm !== 'granted') {
+                        setLibraryStatus('Permiso de lectura denegado para la carpeta de música.');
+                        showToast('Permiso de carpeta denegado', 'fa-lock');
+                        return;
+                    }
+                    setLibraryStatus(`Escaneando carpeta "${handle.name}"...`);
+                    const files = await collectAudioFilesFromDir(handle);
+                    await ingestLocalAudioEntries(files, handle.name || 'Carpeta de Música');
+                    return;
+                } catch (err) {
+                    if (err && err.name === 'AbortError') return;
+                }
+            }
+
+            // Fallback multi-archivo / carpeta en navegadores móviles o sin showDirectoryPicker
+            const folderInput = document.getElementById('folder-upload-fallback');
+            folderInput.value = '';
+            folderInput.click();
+        }
+
+        async function handleFolderFallbackUpload(e) {
+            const files = Array.from(e.target.files || []).filter(isAudioFileNameOrType);
+            await ingestLocalAudioEntries(files, 'Carpeta Seleccionada');
+        }
+
+        async function restoreSavedLibraryPrompt() {
+            const saved = await loadSavedDirectoryHandle();
+            if (!saved) return;
+            directoryHandle = saved;
+            setLibraryStatus(`Carpeta guardada "${saved.name}". Pulsa "Biblioteca Local" para reautorizar y cargar tus canciones.`);
+        }
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 256; analyser.smoothingTimeConstant = 0.8;
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+                analyser.connect(audioCtx.destination);
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function renderPlaylist() {
+            const container = document.getElementById('playlist-container');
+            const countEl = document.getElementById('playlist-count');
+            container.innerHTML = '';
+            if (countEl) {
+                const localCount = tracks.filter(t => Boolean(t.localFile || t.fileHandle)).length;
+                countEl.textContent = `${localCount} ${localCount === 1 ? 'canción' : 'canciones'}`;
+            }
+            const searchInput = document.getElementById('playlist-search');
+            const query = (searchInput?.value || '').trim().toLowerCase();
+            const visibleTracks = tracks
+                .map((track, originalIndex) => ({ track, originalIndex }))
+                .filter(({ track }) => {
+                    if (!query) return true;
+                    return `${track.title} ${track.artist} ${track.genre}`.toLowerCase().includes(query);
+                });
+            visibleTracks.forEach(({ track: t, originalIndex: idx }) => {
+                const active = idx === currentTrackIndex;
+                const btn = document.createElement('button');
+                btn.onclick = () => selectTrack(idx, true);
+                btn.className = `w-full text-left p-2.5 rounded-lg flex items-center justify-between text-xs transition ${active ? 'accent-bg font-bold' : 'hover:bg-white/10'}`;
+                const left = document.createElement('div');
+                left.className = 'flex items-center gap-2.5 truncate';
+                const number = document.createElement('span');
+                number.className = 'opacity-70 font-mono';
+                number.textContent = `${idx + 1}.`;
+                const text = document.createElement('div');
+                text.className = 'truncate';
+                const title = document.createElement('div');
+                title.className = 'truncate';
+                if (t.localFile || t.fileHandle) {
+                    const badge = document.createElement('i');
+                    badge.className = 'fa-solid fa-mobile-screen mr-1 opacity-75';
+                    title.appendChild(badge);
+                }
+                title.append(document.createTextNode(t.title));
+                const artist = document.createElement('div');
+                artist.className = 'text-[10px] opacity-75 truncate';
+                artist.textContent = t.artist;
+                text.append(title, artist);
+                left.append(number, text);
+                const duration = document.createElement('span');
+                duration.className = 'text-[10px] font-mono opacity-80';
+                duration.textContent = t.duration ? formatTime(t.duration) : 'MP3';
+                btn.append(left, duration);
+                container.appendChild(btn);
+            });
+            if (!visibleTracks.length) {
+                const empty = document.createElement('p');
+                empty.className = 'py-3 text-center text-[11px] opacity-60';
+                empty.textContent = tracks.length
+                    ? 'No se encontraron canciones'
+                    : 'Carga MP3 o selecciona una carpeta para empezar';
+                container.appendChild(empty);
+            }
+        }
+
+        function formatTime(sec) {
+            if (!sec || !Number.isFinite(sec)) return '00:00';
+            const m = Math.floor(sec / 60).toString().padStart(2, '0');
+            const s = Math.floor(sec % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        async function playLocalTrack(track) {
+            initAudioContext();
+            if (customAudioEl) {
+                customAudioEl.pause();
+                customAudioEl = null;
+            }
+
+            let file = track.localFile || null;
+            if (!file && track.fileHandle) {
+                const perm = await track.fileHandle.requestPermission({ mode: 'read' });
+                if (perm !== 'granted') {
+                    showToast('Permiso necesario para reproducir el archivo', 'fa-lock');
+                    return;
+                }
+                file = await track.fileHandle.getFile();
+                track.localFile = file;
+            }
+            if (!file) return;
+
+            const url = URL.createObjectURL(file);
+            if (window.__lastUrl) URL.revokeObjectURL(window.__lastUrl);
+            window.__lastUrl = url;
+            customAudioEl = new Audio(url);
+            customAudioEl.playbackRate = playbackRate;
+            customAudioEl.volume = parseFloat(document.getElementById('volume-slider').value);
+
+            customSourceNode = audioCtx.createMediaElementSource(customAudioEl);
+            customSourceNode.connect(analyser);
+
+            customAudioEl.onloadedmetadata = () => {
+                track.duration = customAudioEl.duration;
+                document.getElementById('total-time').textContent = formatTime(customAudioEl.duration);
+                renderPlaylist();
+            };
+            customAudioEl.onended = () => handleEnded();
+
+            isPlaying = true;
+            updatePlayUI();
+            await customAudioEl.play().catch(() => { isPlaying = false; updatePlayUI(); showToast("Toca play para reproducir", "fa-play"); });
+            startProgressTimer();
+        }
+
+        function selectTrack(idx, autoPlayIfActive = false) {
+            if (!Number.isInteger(idx) || idx < 0 || idx >= tracks.length) return;
+            currentTrackIndex = idx;
+            const t = tracks[idx];
+            document.getElementById('track-title').textContent = t.title;
+            document.getElementById('track-artist').textContent = t.artist;
+            document.getElementById('track-genre').textContent = t.genre;
+            document.getElementById('track-cover').src = t.cover || THEME_LOGOS[currentTheme] || './ICONO NEW.jpg';
+            document.getElementById('total-time').textContent = formatTime(t.duration);
+            document.getElementById('progress-bar').value = 0;
+            document.getElementById('current-time').textContent = '00:00';
+            renderPlaylist();
+            updateMobilePlayer();
+
+            if (isPlaying || autoPlayIfActive) {
+                playLocalTrack(t);
+            } else if (customAudioEl) {
+                customAudioEl.pause();
+                customAudioEl = null;
+            }
+        }
+
+        function togglePlay() {
+            if (currentTrackIndex < 0 || currentTrackIndex >= tracks.length) {
+                showToast('Carga una canción local para reproducirla', 'fa-music');
+                return;
+            }
+            const current = tracks[currentTrackIndex];
+
+            if (!isPlaying) {
+                isPlaying = true;
+                updatePlayUI();
+                if (customAudioEl && customAudioEl.src.startsWith('blob:')) {
+                    customAudioEl.play();
+                } else {
+                    playLocalTrack(current);
+                }
+                startProgressTimer();
+            } else {
+                isPlaying = false;
+                updatePlayUI();
+                if (customAudioEl) customAudioEl.pause();
+                clearInterval(progressTimer);
+            }
+        }
+
+        function updatePlayUI() {
+            const icon = document.getElementById('play-icon');
+            const badge = document.getElementById('playing-badge');
+            const mobileIcon = document.getElementById('mobile-play-icon');
+            if (isPlaying) {
+                icon.className = 'fa-solid fa-pause';
+                mobileIcon.className = 'fa-solid fa-pause';
+                badge.classList.remove('hidden');
+            } else {
+                icon.className = 'fa-solid fa-play ml-0.5';
+                mobileIcon.className = 'fa-solid fa-play';
+                badge.classList.add('hidden');
+            }
+        }
+
+        function startProgressTimer() {
+            clearInterval(progressTimer);
+            progressTimer = setInterval(() => {
+                if (!isPlaying || !customAudioEl || window.__seeking) return;
+                const pct = (customAudioEl.currentTime / (customAudioEl.duration || 1)) * 100;
+                document.getElementById('progress-bar').value = pct;
+                document.getElementById('current-time').textContent = formatTime(customAudioEl.currentTime);
+            }, 250);
+        }
+
+        function nextTrack() {
+            if (!tracks.length) return;
+            selectTrack(shuffleOn && tracks.length > 1 ? randomOther() : (currentTrackIndex + 1) % tracks.length, isPlaying);
+        }
+
+        function prevTrack() {
+            if (!tracks.length) return;
+            if (customAudioEl && customAudioEl.currentTime > 3) { customAudioEl.currentTime = 0; return; }
+            selectTrack((currentTrackIndex - 1 + tracks.length) % tracks.length, isPlaying);
+        }
+
+        function changePlaybackRate(val) {
+            playbackRate = parseFloat(val);
+            document.getElementById('speed-display').textContent = playbackRate.toFixed(2) + 'x';
+            document.getElementById('synth-speed-val').textContent = playbackRate.toFixed(2) + 'x';
+            if (customAudioEl) customAudioEl.playbackRate = playbackRate;
+        }
+
+        async function handleFileUpload(e) {
+            const files = Array.from(e.target.files || []).filter(isAudioFileNameOrType);
+            e.target.value = '';
+            if (!files.length) return;
+            await ingestLocalAudioEntries(files, 'Archivos Locales');
+        }
+
+        document.getElementById('volume-slider').addEventListener('input', (e) => {
+            if (customAudioEl) customAudioEl.volume = parseFloat(e.target.value);
+        });
+
+        
+        /* =========================================================================
+           MEJORAS: buscar en la canción, aleatorio/repetir, controles del sistema,
+           atajos de teclado (PC) y preferencias guardadas
+           ========================================================================= */
+        let shuffleOn = false, repeatMode = 'off';
+        const PREF_KEY = 'mp3a_prefs_v2';
+        const volumeSlider = document.getElementById('volume-slider');
+        function savePrefs() {
+            try { localStorage.setItem(PREF_KEY, JSON.stringify({ theme: currentTheme, volume: +volumeSlider.value, rate: playbackRate, shuffle: shuffleOn, repeat: repeatMode })); } catch (_) {}
+        }
+        function randomOther() {
+            let n; do { n = Math.floor(Math.random() * tracks.length); } while (n === currentTrackIndex);
+            return n;
+        }
+        function refreshModeButtons() {
+            const sh = document.getElementById('shuffle-btn'), rp = document.getElementById('repeat-btn');
+            sh.classList.toggle('opacity-50', !shuffleOn); sh.style.color = shuffleOn ? 'var(--accent)' : ''; sh.setAttribute('aria-pressed', shuffleOn);
+            rp.classList.toggle('opacity-50', repeatMode === 'off'); rp.style.color = repeatMode !== 'off' ? 'var(--accent)' : '';
+            document.getElementById('repeat-one').classList.toggle('hidden', repeatMode !== 'one');
+        }
+        function toggleShuffle() { shuffleOn = !shuffleOn; refreshModeButtons(); savePrefs(); showToast(shuffleOn ? 'Aleatorio activado' : 'Aleatorio desactivado', 'fa-shuffle'); }
+        function toggleRepeat() {
+            repeatMode = repeatMode === 'off' ? 'all' : repeatMode === 'all' ? 'one' : 'off';
+            refreshModeButtons(); savePrefs();
+            showToast({ off: 'Repetir: desactivado', all: 'Repetir toda la lista', one: 'Repetir esta canción' }[repeatMode], 'fa-repeat');
+        }
+        function handleEnded() {
+            if (repeatMode === 'one') { customAudioEl.currentTime = 0; customAudioEl.play(); return; }
+            if (!shuffleOn && repeatMode === 'off' && currentTrackIndex === tracks.length - 1) {
+                isPlaying = false; updatePlayUI(); clearInterval(progressTimer); return;
+            }
+            nextTrack();
+        }
+
+        // Buscar dentro de la canción (antes la barra no permitía saltar)
+        const progressEl = document.getElementById('progress-bar');
+        ['pointerdown', 'touchstart'].forEach(ev => progressEl.addEventListener(ev, () => { window.__seeking = true; }, { passive: true }));
+        ['pointerup', 'touchend', 'change'].forEach(ev => progressEl.addEventListener(ev, () => { window.__seeking = false; }));
+        progressEl.addEventListener('input', () => {
+            if (!customAudioEl || !Number.isFinite(customAudioEl.duration)) return;
+            customAudioEl.currentTime = progressEl.value / 100 * customAudioEl.duration;
+            document.getElementById('current-time').textContent = formatTime(customAudioEl.currentTime);
+        });
+        function seekBy(sec) { if (customAudioEl) customAudioEl.currentTime = Math.max(0, Math.min(customAudioEl.duration || 0, customAudioEl.currentTime + sec)); }
+
+        // Controles en pantalla bloqueada, notificación y teclas multimedia
+        function updateMediaSession() {
+            if (!('mediaSession' in navigator) || currentTrackIndex < 0 || !tracks[currentTrackIndex]) return;
+            const t = tracks[currentTrackIndex];
+            try {
+                navigator.mediaSession.metadata = new MediaMetadata({ title: t.title, artist: t.artist, album: 'MP3 A Studio', artwork: [{ src: './app-icon-512.png', sizes: '512x512', type: 'image/png' }] });
+                navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+            } catch (_) {}
+        }
+        const _selectTrack = selectTrack; selectTrack = function () { _selectTrack.apply(this, arguments); updateMediaSession(); };
+        const _updatePlayUI = updatePlayUI; updatePlayUI = function () { _updatePlayUI(); updateMediaSession(); };
+        const _setTheme = setTheme; setTheme = function (t) { _setTheme(t); savePrefs(); };
+        const _changeRate = changePlaybackRate; changePlaybackRate = function (v) { _changeRate(v); savePrefs(); };
+        volumeSlider.addEventListener('input', savePrefs);
+        if ('mediaSession' in navigator) {
+            const set = (a, f) => { try { navigator.mediaSession.setActionHandler(a, f); } catch (_) {} };
+            set('play', () => { if (!isPlaying) togglePlay(); });
+            set('pause', () => { if (isPlaying) togglePlay(); });
+            set('previoustrack', prevTrack); set('nexttrack', nextTrack);
+            set('seekbackward', () => seekBy(-10)); set('seekforward', () => seekBy(10));
+            set('seekto', d => { if (customAudioEl && d.seekTime != null) customAudioEl.currentTime = d.seekTime; });
+            setInterval(() => {
+                if (customAudioEl && Number.isFinite(customAudioEl.duration)) {
+                    try { navigator.mediaSession.setPositionState({ duration: customAudioEl.duration, position: Math.min(customAudioEl.currentTime, customAudioEl.duration), playbackRate: customAudioEl.playbackRate || 1 }); } catch (_) {}
+                }
+            }, 1000);
+        }
+
+        // Atajos de teclado (PC). En el tema Retro, las teclas del juego tienen prioridad.
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            const el = e.target;
+            if (el instanceof HTMLElement && el.matches('input:not([type="range"]), textarea, select, [contenteditable="true"]')) return;
+            const k = e.key.toLowerCase(), retro = currentTheme === 'retro';
+            if (k === 'n') { nextTrack(); return; }
+            if (k === 'p') { prevTrack(); return; }
+            if (k === 'm') { volumeSlider.value = volumeSlider.value > 0 ? (window.__prevVol = volumeSlider.value, 0) : (window.__prevVol || 0.8); volumeSlider.dispatchEvent(new Event('input')); return; }
+            if (retro) return;
+            if ((k === ' ' || k === 'k') && !(el instanceof HTMLElement && el.closest('button, a, label'))) { e.preventDefault(); togglePlay(); }
+            else if (e.key === 'ArrowRight' && !(el instanceof HTMLInputElement)) { e.preventDefault(); seekBy(5); }
+            else if (e.key === 'ArrowLeft' && !(el instanceof HTMLInputElement)) { e.preventDefault(); seekBy(-5); }
+            else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                if (el instanceof HTMLInputElement) return;
+                e.preventDefault();
+                volumeSlider.value = Math.max(0, Math.min(1, +volumeSlider.value + (e.key === 'ArrowUp' ? 0.05 : -0.05)));
+                volumeSlider.dispatchEvent(new Event('input'));
+            }
+            else if (k === 's') toggleShuffle();
+            else if (k === 'r') toggleRepeat();
+        });
+
+        // Restaurar preferencias al abrir
+        window.addEventListener('load', () => {
+            let p = {}; try { p = JSON.parse(localStorage.getItem(PREF_KEY)) || {}; } catch (_) {}
+            if (typeof p.volume === 'number') { volumeSlider.value = p.volume; volumeSlider.dispatchEvent(new Event('input')); }
+            const r = document.getElementById('playback-rate');
+            if (r && p.rate) { r.value = p.rate; if (r.value) changePlaybackRate(r.value); }
+            shuffleOn = !!p.shuffle; repeatMode = p.repeat || 'off'; refreshModeButtons();
+            if (p.theme && p.theme !== currentTheme) { try { setTheme(p.theme); } catch (_) {} }
+        });
+
+        /* =========================================================================
+           3. VISUALIZADOR DE ESPECTRO + DETECTOR DE BASS
+           ========================================================================= */
+        const visCanvas = document.getElementById('visualizer-canvas');
+        const visCtx = visCanvas.getContext('2d');
+        const hackerNameInput = document.getElementById('hacker-username');
+        const hackerNameVisualizer = document.getElementById('hacker-name-visualizer');
+
+        function updateHackerNameVisualizer() {
+            hackerNameVisualizer.textContent = hackerNameInput.value.trim().toUpperCase() || 'HACKER_ROOT';
+        }
+
+        hackerNameInput.addEventListener('input', updateHackerNameVisualizer);
+
+        function resizeVisualizer() {
+            const d = Math.min(window.devicePixelRatio || 1, 2);
+            visCanvas.width = visCanvas.parentElement.clientWidth * d;
+            visCanvas.height = visCanvas.parentElement.clientHeight * d;
+            visCtx.setTransform(d, 0, 0, d, 0, 0);
+        }
+        window.addEventListener('resize', () => {
+            resizeVisualizer();
+            if (currentTheme === 'retro') {
+                resizeMarioCanvas();
+                resetMarioGame();
+            }
+            if (currentTheme === 'cristal') resizeIceCanvas();
+            if (currentTheme === 'synthwave') resizeSynthwaveCanvas();
+            if (currentTheme === 'comic') resizeComicCanvas();
+        });
+
+        /* =========================================================================
+           VISUALIZADORES: 5 modos, estilo propio por tema, nítidos en móvil (DPR)
+           ========================================================================= */
+        const VIS_MODES = [['bars', 'Barras', 'fa-chart-simple'], ['mirror', 'Espejo', 'fa-bars-staggered'], ['wave', 'Onda', 'fa-wave-square'], ['radial', 'Radial', 'fa-circle-notch'], ['stars', 'Partículas', 'fa-star']];
+        const VIS_STYLE = {
+            default: { c: ['#3b82f6', '#a78bfa'], glow: 12, shape: 'round' },
+            retro: { c: ['#ffcd75', '#ef7d57'], glow: 0, shape: 'pixel' },
+            cristal: { c: ['#e0f7ff', '#38bdf8'], glow: 16, shape: 'round' },
+            hacker: { c: ['#00ff41', '#008f11'], glow: 10, shape: 'pixel' },
+            synthwave: { c: ['#01cdfe', '#ff71ce'], glow: 22, shape: 'round' },
+            comic: { c: ['#ef4444', '#facc15'], glow: 0, shape: 'outline' }
+        };
+        let visMode = 'bars'; try { visMode = localStorage.getItem('mp3a_vis') || 'bars'; } catch (_) {}
+        const visStage = visCanvas.parentElement, visParts = []; let timeData = null;
+        function setVisMode(m) {
+            visMode = m; try { localStorage.setItem('mp3a_vis', m); } catch (_) {}
+            document.querySelectorAll('.vis-mode-btn[data-mode]').forEach(b => { const on = b.dataset.mode === m; b.style.background = on ? 'var(--accent)' : 'transparent'; b.style.color = on ? '#000' : 'inherit'; b.setAttribute('aria-pressed', on); });
+        }
+        const visBar = document.getElementById('vis-modes');
+        VIS_MODES.forEach(([id, name, icon]) => { const b = document.createElement('button'); b.type = 'button'; b.dataset.mode = id; b.className = 'vis-mode-btn'; b.innerHTML = `<i class="fa-solid ${icon}"></i><span>${name}</span>`; b.onclick = () => setVisMode(id); visBar.appendChild(b); });
+        if (visStage.requestFullscreen) { const f = document.createElement('button'); f.type = 'button'; f.className = 'vis-mode-btn ml-auto'; f.setAttribute('aria-label', 'Pantalla completa'); f.innerHTML = '<i class="fa-solid fa-expand"></i>'; f.onclick = () => document.fullscreenElement ? document.exitFullscreen() : visStage.requestFullscreen(); visBar.appendChild(f); }
+        setVisMode(visMode);
+        let swipeX = null;
+        visStage.addEventListener('pointerdown', e => { swipeX = e.clientX; }, { passive: true });
+        visStage.addEventListener('pointerup', e => {
+            if (swipeX === null) return; const d = e.clientX - swipeX; swipeX = null; if (Math.abs(d) < 50) return;
+            const i = VIS_MODES.findIndex(m => m[0] === visMode); setVisMode(VIS_MODES[(i + (d < 0 ? 1 : -1) + VIS_MODES.length) % VIS_MODES.length][0]);
+        });
+        new ResizeObserver(() => resizeVisualizer()).observe(visStage);
+
+        function drawVisualizer(w, h) {
+            const st = VIS_STYLE[currentTheme] || VIS_STYLE.default, t = Date.now(), live = analyser && isPlaying;
+            if (visStage.dataset.vis !== currentTheme) visStage.dataset.vis = currentTheme;
+            const small = w < 480;
+            const lvl = (i, n) => live ? dataArray[Math.min(dataArray.length - 1, Math.floor(Math.pow(i / n, 1.3) * dataArray.length * 0.8))] / 255 : 0.07 + 0.05 * Math.sin(t * 0.004 + i * 0.35);
+            const g = visCtx.createLinearGradient(0, h, 0, 0); g.addColorStop(0, st.c[0]); g.addColorStop(1, st.c[1]);
+            visCtx.shadowColor = st.c[1]; visCtx.shadowBlur = st.glow * (small ? 0.5 : 1); visCtx.fillStyle = g; visCtx.strokeStyle = st.c[1];
+            const block = (x, y, bw, bh) => {
+                if (st.shape === 'pixel') { const sq = Math.max(4, Math.round(bw)); for (let yy = y + bh - sq; yy >= y - 1; yy -= sq + 1) visCtx.fillRect(x, yy, bw, sq); }
+                else if (visCtx.roundRect) { visCtx.beginPath(); visCtx.roundRect(x, y, bw, bh, Math.min(bw / 2, 6)); visCtx.fill(); if (st.shape === 'outline') { visCtx.lineWidth = 2; visCtx.strokeStyle = '#000'; visCtx.stroke(); } }
+                else visCtx.fillRect(x, y, bw, bh);
+            };
+            if (visMode === 'bars' || visMode === 'mirror') {
+                const n = small ? 22 : 40, gap = 3, bw = w / n - gap, mid = visMode === 'mirror';
+                for (let i = 0; i < n; i++) {
+                    const bh = Math.max(4, lvl(i, n) * (mid ? h * 0.46 : h - 8)), x = i * (bw + gap) + gap / 2;
+                    if (mid) { block(x, h / 2 - bh, bw, bh); block(x, h / 2, bw, bh); } else block(x, h - bh, bw, bh);
+                }
+            } else if (visMode === 'wave') {
+                const lg = visCtx.createLinearGradient(0, 0, w, 0); lg.addColorStop(0, st.c[0]); lg.addColorStop(1, st.c[1]);
+                visCtx.strokeStyle = lg; visCtx.lineWidth = currentTheme === 'comic' ? 5 : 3; visCtx.lineJoin = 'round'; visCtx.beginPath();
+                const pts = small ? 64 : 128;
+                for (let i = 0; i <= pts; i++) {
+                    const y = live && timeData ? (timeData[Math.floor(i / pts * (timeData.length - 1))] - 128) / 128 : Math.sin(t * 0.003 + i * 0.18) * 0.12;
+                    i ? visCtx.lineTo(i / pts * w, h / 2 + y * h * 0.42) : visCtx.moveTo(0, h / 2 + y * h * 0.42);
+                }
+                visCtx.stroke();
+            } else if (visMode === 'radial') {
+                const n = small ? 40 : 64, cx = w / 2, cy = h / 2, m = Math.min(w, h), r = m * 0.2 * (1 + bassEnergy / 400), rot = t * 0.0004;
+                visCtx.lineWidth = Math.max(2, m * 0.02); visCtx.lineCap = currentTheme === 'retro' ? 'butt' : 'round';
+                for (let i = 0; i < n; i++) {
+                    const a = i / n * Math.PI * 2 + rot, len = 4 + lvl(i % (n / 2), n / 2) * m * 0.3;
+                    visCtx.strokeStyle = st.c[i % 2];
+                    visCtx.beginPath(); visCtx.moveTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r); visCtx.lineTo(cx + Math.cos(a) * (r + len), cy + Math.sin(a) * (r + len)); visCtx.stroke();
+                }
+            } else {
+                const burst = live ? Math.floor(bassEnergy / 14) + 1 : (Math.random() < 0.25 ? 1 : 0);
+                for (let k = 0; k < burst && visParts.length < (small ? 90 : 160); k++) { const a = Math.random() * 6.283, sp = 0.6 + Math.random() * 2.2 + bassEnergy / 40; visParts.push({ x: w / 2, y: h / 2, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, c: st.c[k % 2] }); }
+                for (let i = visParts.length - 1; i >= 0; i--) {
+                    const q = visParts[i]; q.x += q.vx; q.y += q.vy; q.life -= 0.016;
+                    if (q.life <= 0 || q.x < 0 || q.x > w || q.y < 0 || q.y > h) { visParts.splice(i, 1); continue; }
+                    const z = 1 + (1 - q.life) * 3; visCtx.globalAlpha = q.life; visCtx.fillStyle = q.c;
+                    if (st.shape === 'pixel') visCtx.fillRect(q.x, q.y, z * 1.5, z * 1.5); else { visCtx.beginPath(); visCtx.arc(q.x, q.y, z, 0, 6.283); visCtx.fill(); }
+                }
+                visCtx.globalAlpha = 1;
+            }
+            visCtx.shadowBlur = 0;
+        }
+
+        function renderVisualizerLoop() {
+            requestAnimationFrame(renderVisualizerLoop);
+            const w = visCanvas.clientWidth;
+            const h = visCanvas.clientHeight;
+            visCtx.clearRect(0, 0, w, h);
+
+            let bassSum = 0;
+            if (analyser && isPlaying) {
+                analyser.getByteFrequencyData(dataArray);
+                for (let i = 0; i < 3; i++) bassSum += dataArray[i];
+                bassEnergy = Math.min(100, Math.round((bassSum / (3 * 255)) * 100));
+            } else {
+                bassEnergy = Math.max(0, bassEnergy - 3);
+            }
+
+            document.getElementById('bass-meter').style.width = bassEnergy + '%';
+            document.getElementById('synth-bass-val').textContent = bassEnergy + '%';
+
+            const namePulse = isPlaying ? Math.min(1, bassEnergy / 55) : 0;
+            const nameScale = 1 + namePulse * 0.3;
+            hackerNameVisualizer.style.transform = `scale(${nameScale})`;
+            hackerNameVisualizer.style.textShadow = `0 0 ${8 + namePulse * 28}px rgba(0, 255, 65, ${0.45 + namePulse * 0.55})`;
+
+            if (currentTheme === 'synthwave' && isPlaying && bassEnergy > 58) {
+                if (Math.random() < 0.28 * playbackRate) {
+                    spawnFirework(true);
+                }
+            }
+
+            if (analyser && isPlaying && visMode === 'wave') analyser.getByteTimeDomainData(timeData || (timeData = new Uint8Array(analyser.fftSize)));
+            drawVisualizer(w, h);
+        }
+
+        /* =========================================================================
+           4. TEMA RETRO: AVENTURA DE PLATAFORMAS 8-BIT
+           ========================================================================= */
+        const marioCanvas = document.getElementById('mario-canvas');
+        const marioCtx = marioCanvas.getContext('2d');
+        const marioKeys = { left: false, right: false, run: false, brake: false, jump: false };
+        let marioState = {};
+        let marioLevelIndex = 0;
+        let marioLives = 3;
+        let marioTotalScore = 0;
+        const marioLevels = [
+            {
+                name: 'MUNDO 1-1',
+                sky: '#5c94fc',
+                ground: '#c84c0c',
+                grass: '#00a800',
+                length: 2050,
+                gaps: [[560, 635], [1130, 1210], [1680, 1760]],
+                pipes: [[285, 42], [790, 54], [1300, 48], [1840, 62]],
+                blocks: [[170, 105], [196, 105], [485, 132], [900, 98], [926, 98], [1460, 125], [1486, 125], [1730, 98]],
+                platforms: [[365, 82, 88], [690, 118, 100], [1010, 80, 90], [1370, 112, 100], [1570, 86, 90], [1780, 120, 110]],
+                coins: [[180, 145], [206, 145], [420, 115], [515, 155], [710, 155], [935, 135], [1050, 120], [1400, 150], [1495, 160], [1600, 130], [1800, 158], [1945, 120]],
+                enemies: [[370, 42], [740, 36], [1030, 45], [1400, 38], [1600, 42], [1870, 35]]
+            },
+            {
+                name: 'MUNDO 1-2',
+                sky: '#3973c6',
+                ground: '#9c4b16',
+                grass: '#00a800',
+                length: 2250,
+                gaps: [[440, 525], [920, 1015], [1510, 1600], [1940, 2035]],
+                pipes: [[215, 54], [660, 68], [1130, 48], [1710, 64], [2130, 55]],
+                blocks: [[310, 110], [336, 110], [735, 138], [1040, 102], [1066, 102], [1390, 125], [1650, 108], [1676, 108], [1830, 138]],
+                platforms: [[365, 120, 90], [550, 78, 100], [820, 108, 100], [1200, 86, 115], [1440, 145, 105], [1750, 102, 110], [2070, 125, 100]],
+                coins: [[325, 150], [380, 165], [580, 120], [755, 170], [850, 140], [1080, 145], [1220, 130], [1460, 175], [1690, 140], [1770, 150], [1860, 170], [2090, 155], [2180, 125]],
+                enemies: [[370, 38], [700, 42], [870, 32], [1260, 44], [1790, 40], [1880, 34], [2150, 38]]
+            },
+            {
+                name: 'MUNDO 1-3',
+                sky: '#241b64',
+                ground: '#6e3a20',
+                grass: '#26b94a',
+                length: 2400,
+                gaps: [[510, 600], [1050, 1160], [1660, 1770], [2120, 2225]],
+                pipes: [[275, 58], [735, 75], [1260, 52], [1530, 65], [1910, 72], [2290, 58]],
+                blocks: [[200, 125], [226, 125], [430, 155], [650, 108], [676, 108], [950, 135], [1220, 125], [1246, 125], [1460, 155], [1810, 112], [1836, 112], [2040, 145], [2250, 110]],
+                platforms: [[340, 100, 95], [785, 125, 110], [990, 92, 100], [1330, 115, 115], [1580, 135, 95], [1870, 120, 120], [1980, 88, 85], [2235, 135, 100]],
+                coins: [[210, 170], [440, 185], [690, 145], [815, 175], [1010, 145], [1240, 165], [1350, 155], [1480, 185], [1600, 175], [1850, 155], [2010, 135], [2060, 175], [2250, 165], [2350, 125]],
+                enemies: [[370, 40], [830, 36], [970, 34], [1380, 42], [1610, 38], [1870, 44], [2050, 36], [2320, 40]]
+            }
+        ];
+
+        function resizeMarioCanvas() {
+            marioCanvas.width = marioCanvas.parentElement.clientWidth;
+            marioCanvas.height = marioCanvas.parentElement.clientHeight;
+        }
+
+        function resetMarioGame() {
+            document.getElementById('mario-overlay').classList.add('hidden');
+            const w = marioCanvas.width || 500;
+            const h = marioCanvas.height || 240;
+            const scale = Math.min(1, w / 500);
+            const size = value => value * scale;
+            const groundY = h - size(36);
+            const level = marioLevels[marioLevelIndex];
+            const solids = [
+                ...level.platforms.map(([x, height, width]) => ({
+                    x: size(x), y: groundY - size(height), w: size(width), h: size(10), type: 'platform'
+                })),
+                ...level.pipes.map(([x, height]) => ({
+                    x: size(x), y: groundY - size(height), w: size(38), h: size(height), type: 'pipe'
+                })),
+                ...level.blocks.map(([x, height]) => ({
+                    x: size(x), y: groundY - size(height), w: size(26), h: size(26), type: 'block', hit: false
+                }))
+            ];
+            marioState = {
+                scale,
+                x: size(40),
+                y: groundY - size(28),
+                vx: 0,
+                vy: 0,
+                w: size(22),
+                h: size(28),
+                grounded: true,
+                score: marioTotalScore,
+                won: false,
+                groundY: groundY,
+                solids,
+                gaps: level.gaps.map(([start, end]) => [size(start), size(end)]),
+                coins: level.coins.map(([x, height]) => ({ x: size(x), y: groundY - size(height), collected: false })),
+                enemies: level.enemies.map(([x, range], index) => ({
+                    x: size(x), y: groundY - size(20), w: size(20), h: size(20),
+                    startX: size(x), range: size(range), direction: index % 2 ? -1 : 1, alive: true
+                })),
+                level,
+                levelWidth: size(level.length),
+                cameraX: 0,
+                lastFrame: 0,
+                facing: 1,
+                flagX: size(level.length - 90)
+            };
+            document.getElementById('mario-level').textContent = level.name;
+            document.getElementById('mario-lives').textContent = `VIDAS: ${marioLives}`;
+            document.getElementById('mario-score').textContent = `PUNTOS: ${marioState.score}`;
+        }
+
+        function advanceMarioLevel() {
+            marioLevelIndex++;
+            if (marioLevelIndex >= marioLevels.length) {
+                marioLevelIndex = 0;
+                marioLives = 3;
+                marioTotalScore = 0;
+            }
+            resetMarioGame();
+        }
+
+        function resetMarioProgress() {
+            marioLevelIndex = 0;
+            marioLives = 3;
+            marioTotalScore = 0;
+            resetMarioGame();
+        }
+
+        function loseMarioLife() {
+            marioLives--;
+            if (marioLives <= 0) {
+                marioLives = 3;
+                marioLevelIndex = 0;
+                marioTotalScore = 0;
+            }
+            resetMarioGame();
+            showToast(marioLives === 3 ? 'Fin de partida. Reiniciado desde el Mundo 1-1' : '¡Cuidado! Pierdes una vida', 'fa-heart-crack');
+        }
+
+        function marioJump() {
+            if (marioState.grounded && !marioState.won) {
+                marioState.vy = -9.6 * marioState.scale;
+                marioState.grounded = false;
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (currentTheme !== 'retro') return;
+            if (e.target instanceof HTMLElement && e.target.matches('input, textarea, select, [contenteditable="true"]')) return;
+            const key = e.key.toLowerCase();
+            if (['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', ' '].includes(e.key)) e.preventDefault();
+            if (e.key === 'ArrowLeft' || key === 'a') marioKeys.left = true;
+            if (e.key === 'ArrowRight' || key === 'd') marioKeys.right = true;
+            if (e.key === 'ArrowDown' || key === 's') marioKeys.brake = true;
+            if (e.key === 'Shift' || key === 'b') marioKeys.run = true;
+            if (e.key === ' ' || e.key === 'ArrowUp' || key === 'w' || key === 'z') {
+                if (!marioKeys.jump) marioJump();
+                marioKeys.jump = true;
+            }
+        });
+        window.addEventListener('keyup', (e) => {
+            const key = e.key.toLowerCase();
+            if (e.key === 'ArrowLeft' || key === 'a') marioKeys.left = false;
+            if (e.key === 'ArrowRight' || key === 'd') marioKeys.right = false;
+            if (e.key === 'ArrowDown' || key === 's') marioKeys.brake = false;
+            if (e.key === 'Shift' || key === 'b') marioKeys.run = false;
+            if (e.key === ' ' || e.key === 'ArrowUp' || key === 'w' || key === 'z') marioKeys.jump = false;
+        });
+        window.addEventListener('blur', () => {
+            Object.keys(marioKeys).forEach(key => { marioKeys[key] = false; });
+        });
+
+        function updateAndDrawMario(now = performance.now()) {
+            requestAnimationFrame(updateAndDrawMario);
+            if (currentTheme !== 'retro' || !marioState.groundY) return;
+
+            const w = marioCanvas.width;
+            const h = marioCanvas.height;
+            const scale = marioState.scale;
+            const dt = marioState.lastFrame ? Math.min((now - marioState.lastFrame) / 16.67, 2) : 1;
+            marioState.lastFrame = now;
+            const state = marioState;
+
+            if (!state.won) {
+                const previousBottom = state.y + state.h;
+                const direction = (marioKeys.right ? 1 : 0) - (marioKeys.left ? 1 : 0);
+                const maxSpeed = (marioKeys.run ? 4.1 : 2.8) * scale;
+                if (marioKeys.brake) {
+                    state.vx *= Math.pow(0.55, dt);
+                } else if (direction) {
+                    state.vx += direction * 0.42 * scale * dt;
+                    state.vx = Math.max(-maxSpeed, Math.min(maxSpeed, state.vx));
+                    state.facing = direction;
+                } else {
+                    state.vx *= Math.pow(0.78, dt);
+                    if (Math.abs(state.vx) < 0.08 * scale) state.vx = 0;
+                }
+
+                state.x += state.vx * dt;
+                state.x = Math.max(0, Math.min(state.levelWidth - state.w, state.x));
+                for (const solid of state.solids) {
+                    if (state.y + state.h <= solid.y || state.y >= solid.y + solid.h ||
+                        state.x + state.w <= solid.x || state.x >= solid.x + solid.w) continue;
+                    if (state.vx > 0) state.x = solid.x - state.w;
+                    else if (state.vx < 0) state.x = solid.x + solid.w;
+                    state.vx = 0;
+                }
+
+                if (marioKeys.jump && state.vy < 0) state.vy -= 0.12 * scale * dt;
+                state.vy = Math.min(10 * scale, state.vy + 0.48 * scale * dt);
+                state.y += state.vy * dt;
+                state.grounded = false;
+
+                for (const solid of state.solids) {
+                    const overlapsX = state.x + state.w > solid.x && state.x < solid.x + solid.w;
+                    if (!overlapsX || state.y + state.h <= solid.y || state.y >= solid.y + solid.h) continue;
+                    if (state.vy > 0 && previousBottom <= solid.y + 4 * scale) {
+                        state.y = solid.y - state.h;
+                        state.vy = 0;
+                        state.grounded = true;
+                    } else if (state.vy < 0 && state.y < solid.y + solid.h) {
+                        state.y = solid.y + solid.h;
+                        state.vy = 0.5 * scale;
+                        if (solid.type === 'block' && !solid.hit) {
+                            solid.hit = true;
+                            state.score += 100;
+                            marioTotalScore = state.score;
+                            document.getElementById('mario-score').textContent = `PUNTOS: ${state.score}`;
+                        }
+                    }
+                }
+
+                const playerCenter = state.x + state.w / 2;
+                const overGap = state.gaps.some(([start, end]) => playerCenter >= start && playerCenter <= end);
+                if (!overGap && state.y + state.h >= state.groundY && state.y < state.groundY) {
+                    state.y = state.groundY - state.h;
+                    state.vy = 0;
+                    state.grounded = true;
+                }
+
+                for (const coin of state.coins) {
+                    if (!coin.collected && Math.abs(playerCenter - coin.x) < 17 * scale &&
+                        Math.abs((state.y + state.h / 2) - coin.y) < 20 * scale) {
+                        coin.collected = true;
+                        state.score += 50;
+                        marioTotalScore = state.score;
+                        document.getElementById('mario-score').textContent = `PUNTOS: ${state.score}`;
+                    }
+                }
+
+                let hitEnemy = false;
+                for (const enemy of state.enemies) {
+                    if (!enemy.alive) continue;
+                    enemy.x += 0.85 * scale * enemy.direction * dt;
+                    if (enemy.x > enemy.startX + enemy.range || enemy.x < enemy.startX - enemy.range) {
+                        enemy.direction *= -1;
+                    }
+                    const overlap = state.x + state.w > enemy.x && state.x < enemy.x + enemy.w &&
+                        state.y + state.h > enemy.y && state.y < enemy.y + enemy.h;
+                    if (!overlap) continue;
+                    if (state.vy > 0 && previousBottom <= enemy.y + 8 * scale) {
+                        enemy.alive = false;
+                        state.vy = -6.5 * scale;
+                        state.score += 200;
+                        marioTotalScore = state.score;
+                        document.getElementById('mario-score').textContent = `PUNTOS: ${state.score}`;
+                    } else {
+                        hitEnemy = true;
+                        break;
+                    }
+                }
+
+                if (hitEnemy || state.y > h + 24 * scale) {
+                    loseMarioLife();
+                } else if (state.x + state.w >= state.flagX) {
+                    state.won = true;
+                    state.score += 500;
+                    marioTotalScore = state.score;
+                    document.getElementById('mario-score').textContent = `PUNTOS: ${state.score}`;
+                    document.getElementById('mario-msg').textContent = marioLevelIndex === marioLevels.length - 1
+                        ? `¡AVENTURA COMPLETADA! PUNTOS: ${state.score}`
+                        : `¡NIVEL SUPERADO! PUNTOS: ${state.score}`;
+                    document.getElementById('mario-next-button').textContent = marioLevelIndex === marioLevels.length - 1
+                        ? 'JUGAR DE NUEVO'
+                        : 'SIGUIENTE NIVEL';
+                    document.getElementById('mario-overlay').classList.remove('hidden');
+                }
+            }
+
+            state.cameraX = Math.max(0, Math.min(state.levelWidth - w, state.x - w * 0.36));
+            const cameraX = state.cameraX;
+            const screenX = worldX => worldX - cameraX;
+            marioCtx.fillStyle = state.level.sky;
+            marioCtx.fillRect(0, 0, w, h);
+
+            for (let cloud = Math.floor(cameraX * 0.2 / (150 * scale)); cloud < Math.ceil((cameraX * 0.2 + w) / (150 * scale)) + 1; cloud++) {
+                const cx = cloud * 150 * scale - cameraX * 0.2 + 25 * scale;
+                const cy = (28 + (cloud % 3) * 13) * scale;
+                marioCtx.fillStyle = 'rgba(255,255,255,0.82)';
+                marioCtx.fillRect(cx, cy, 38 * scale, 10 * scale);
+                marioCtx.fillRect(cx + 8 * scale, cy - 7 * scale, 21 * scale, 9 * scale);
+            }
+            for (let hill = Math.floor(cameraX * 0.35 / (220 * scale)); hill < Math.ceil((cameraX * 0.35 + w) / (220 * scale)) + 1; hill++) {
+                const hx = hill * 220 * scale - cameraX * 0.35;
+                marioCtx.fillStyle = state.level.grass;
+                marioCtx.beginPath();
+                marioCtx.moveTo(hx, state.groundY);
+                marioCtx.lineTo(hx + 95 * scale, state.groundY - 38 * scale);
+                marioCtx.lineTo(hx + 190 * scale, state.groundY);
+                marioCtx.fill();
+            }
+
+            const drawGround = (start, end) => {
+                const x = screenX(start);
+                const width = end - start;
+                marioCtx.fillStyle = state.level.ground;
+                marioCtx.fillRect(x, state.groundY, width, h - state.groundY);
+                marioCtx.fillStyle = state.level.grass;
+                marioCtx.fillRect(x, state.groundY, width, 6 * scale);
+                marioCtx.strokeStyle = 'rgba(0,0,0,0.3)';
+                marioCtx.lineWidth = scale;
+                for (let tile = Math.ceil(start / (18 * scale)) * 18 * scale; tile < end; tile += 18 * scale) {
+                    marioCtx.strokeRect(screenX(tile), state.groundY + 9 * scale, 18 * scale, 15 * scale);
+                }
+            };
+            let groundCursor = 0;
+            for (const [gapStart, gapEnd] of state.gaps) {
+                drawGround(groundCursor, gapStart);
+                groundCursor = gapEnd;
+            }
+            drawGround(groundCursor, state.levelWidth);
+            state.gaps.forEach(([gapStart, gapEnd]) => {
+                marioCtx.fillStyle = '#17203a';
+                marioCtx.fillRect(screenX(gapStart), state.groundY, gapEnd - gapStart, h - state.groundY);
+            });
+
+            state.solids.forEach(solid => {
+                const x = screenX(solid.x);
+                if (x + solid.w < 0 || x > w) return;
+                if (solid.type === 'pipe') {
+                    marioCtx.fillStyle = '#00a800';
+                    marioCtx.fillRect(x, solid.y, solid.w, solid.h);
+                    marioCtx.fillStyle = '#21d421';
+                    marioCtx.fillRect(x + 5 * scale, solid.y + 2 * scale, 6 * scale, solid.h - 2 * scale);
+                    marioCtx.fillStyle = '#006000';
+                    marioCtx.fillRect(x - 4 * scale, solid.y, solid.w + 8 * scale, 9 * scale);
+                    marioCtx.strokeStyle = '#003b00';
+                    marioCtx.lineWidth = 2 * scale;
+                    marioCtx.strokeRect(x, solid.y, solid.w, solid.h);
+                } else {
+                    marioCtx.fillStyle = solid.type === 'block' ? (solid.hit ? '#887000' : '#fca044') : '#9a551d';
+                    marioCtx.fillRect(x, solid.y, solid.w, solid.h);
+                    marioCtx.strokeStyle = '#24170b';
+                    marioCtx.lineWidth = 2 * scale;
+                    marioCtx.strokeRect(x, solid.y, solid.w, solid.h);
+                    if (solid.type === 'block' && !solid.hit) {
+                        marioCtx.fillStyle = '#2c1b0e';
+                        marioCtx.font = `bold ${Math.max(8, 14 * scale)}px monospace`;
+                        marioCtx.fillText('?', x + 8 * scale, solid.y + 19 * scale);
+                    }
+                }
+            });
+
+            state.coins.forEach(coin => {
+                if (coin.collected) return;
+                const x = screenX(coin.x);
+                const coinWidth = (Math.sin(now * 0.012 + coin.x) > 0.85 ? 3 : 6) * scale;
+                marioCtx.fillStyle = '#ffcd35';
+                marioCtx.fillRect(x - coinWidth, coin.y - 8 * scale, coinWidth * 2, 16 * scale);
+                marioCtx.fillStyle = '#fff29b';
+                marioCtx.fillRect(x - scale, coin.y - 5 * scale, 2 * scale, 10 * scale);
+            });
+
+            state.enemies.forEach(enemy => {
+                if (!enemy.alive) return;
+                const x = screenX(enemy.x);
+                if (x + enemy.w < 0 || x > w) return;
+                marioCtx.fillStyle = '#7c3f00';
+                marioCtx.fillRect(x + 2 * scale, enemy.y + 3 * scale, enemy.w - 4 * scale, enemy.h - 3 * scale);
+                marioCtx.fillStyle = '#d8a060';
+                marioCtx.fillRect(x + 3 * scale, enemy.y + 6 * scale, enemy.w - 6 * scale, 7 * scale);
+                marioCtx.fillStyle = '#000';
+                marioCtx.fillRect(x + 5 * scale, enemy.y + 7 * scale, 3 * scale, 3 * scale);
+                marioCtx.fillRect(x + 12 * scale, enemy.y + 7 * scale, 3 * scale, 3 * scale);
+                marioCtx.fillRect(x, enemy.y + enemy.h - 2 * scale, 8 * scale, 3 * scale);
+                marioCtx.fillRect(x + enemy.w - 8 * scale, enemy.y + enemy.h - 2 * scale, 8 * scale, 3 * scale);
+            });
+
+            const flagX = screenX(state.flagX);
+            marioCtx.fillStyle = '#ffffff';
+            marioCtx.fillRect(flagX, state.groundY - 110 * scale, 4 * scale, 110 * scale);
+            marioCtx.fillStyle = state.level.grass;
+            marioCtx.beginPath();
+            marioCtx.moveTo(flagX + 4 * scale, state.groundY - 110 * scale);
+            marioCtx.lineTo(flagX + 32 * scale, state.groundY - 96 * scale);
+            marioCtx.lineTo(flagX + 4 * scale, state.groundY - 82 * scale);
+            marioCtx.fill();
+
+            const mx = screenX(state.x);
+            const my = state.y;
+            const walkFrame = Math.floor(now / 100) % 2;
+            marioCtx.fillStyle = '#d63c36';
+            marioCtx.fillRect(mx + 2 * scale, my, 18 * scale, 6 * scale);
+            marioCtx.fillRect(mx + (state.facing > 0 ? 13 : 2) * scale, my + 6 * scale, 8 * scale, 4 * scale);
+            marioCtx.fillStyle = '#f4b183';
+            marioCtx.fillRect(mx + (state.facing > 0 ? 8 : 3) * scale, my + 6 * scale, 12 * scale, 8 * scale);
+            marioCtx.fillStyle = '#30202a';
+            marioCtx.fillRect(mx + (state.facing > 0 ? 16 : 4) * scale, my + 8 * scale, 2 * scale, 2 * scale);
+            marioCtx.fillStyle = '#d63c36';
+            marioCtx.fillRect(mx + 3 * scale, my + 14 * scale, 16 * scale, 6 * scale);
+            marioCtx.fillStyle = '#2462b2';
+            marioCtx.fillRect(mx + 4 * scale, my + 19 * scale, 14 * scale, 6 * scale);
+            marioCtx.fillStyle = '#49322c';
+            marioCtx.fillRect(mx + (walkFrame && state.grounded ? 1 : 3) * scale, my + 25 * scale, 8 * scale, 3 * scale);
+            marioCtx.fillRect(mx + (walkFrame && state.grounded ? 13 : 11) * scale, my + 25 * scale, 8 * scale, 3 * scale);
+
+            marioCtx.fillStyle = 'rgba(0,0,0,0.45)';
+            marioCtx.fillRect(5 * scale, 5 * scale, w - 10 * scale, 4 * scale);
+            marioCtx.fillStyle = '#ffcd75';
+            marioCtx.fillRect(5 * scale, 5 * scale, Math.max(0, (w - 10 * scale) * state.x / state.flagX), 4 * scale);
+        }
+
+        /* =========================================================================
+           5. TEMA CRISTAL: JUEGO ROMPE EL HIELO (BLOQUES FRACTURABLES + ESQUIRLAS)
+           ========================================================================= */
+        const iceCanvas = document.getElementById('ice-canvas');
+        const iceCtx = iceCanvas.getContext('2d');
+        let iceBlocks = [];
+        let iceShards = [];
+        let isBreakingIce = false;
+
+        function resizeIceCanvas() {
+            iceCanvas.width = iceCanvas.parentElement.clientWidth;
+            iceCanvas.height = iceCanvas.parentElement.clientHeight;
+        }
+
+        function initIceGame() {
+            resizeIceCanvas();
+            iceBlocks = [];
+            iceShards = [];
+            const cols = 8;
+            const rows = 5;
+            const bw = iceCanvas.width / cols;
+            const bh = iceCanvas.height / rows;
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    iceBlocks.push({
+                        x: c * bw,
+                        y: r * bh,
+                        w: bw,
+                        h: bh,
+                        hp: 2,
+                        shimmer: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+            updateIceProgress();
+        }
+
+        function updateIceProgress() {
+            const total = iceBlocks.length * 2;
+            const remaining = iceBlocks.reduce((acc, b) => acc + b.hp, 0);
+            const pct = Math.round(((total - remaining) / total) * 100);
+            document.getElementById('ice-progress').textContent = `${pct}% Roto`;
+        }
+
+        function hitIceAt(clientX, clientY) {
+            const rect = iceCanvas.getBoundingClientRect();
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+
+            iceBlocks.forEach(b => {
+                if (b.hp > 0 && x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) {
+                    b.hp--;
+                    for (let i = 0; i < 10; i++) {
+                        iceShards.push({
+                            x: x,
+                            y: y,
+                            vx: (Math.random() - 0.5) * 7,
+                            vy: (Math.random() - 0.7) * 7,
+                            size: 3 + Math.random() * 5,
+                            alpha: 1,
+                            rot: Math.random() * Math.PI
+                        });
+                    }
+                    updateIceProgress();
+                }
+            });
+        }
+
+        iceCanvas.addEventListener('mousedown', (e) => { isBreakingIce = true; hitIceAt(e.clientX, e.clientY); });
+        iceCanvas.addEventListener('mousemove', (e) => { if (isBreakingIce) hitIceAt(e.clientX, e.clientY); });
+        window.addEventListener('mouseup', () => { isBreakingIce = false; });
+        iceCanvas.addEventListener('touchstart', (e) => {
+            const t = e.touches[0];
+            hitIceAt(t.clientX, t.clientY);
+        });
+        iceCanvas.addEventListener('touchmove', (e) => {
+            const t = e.touches[0];
+            hitIceAt(t.clientX, t.clientY);
+        });
+
+        function renderIceLoop() {
+            requestAnimationFrame(renderIceLoop);
+            if (currentTheme !== 'cristal') return;
+
+            const w = iceCanvas.width;
+            const h = iceCanvas.height;
+            iceCtx.clearRect(0, 0, w, h);
+
+            const grad = iceCtx.createRadialGradient(w / 2, h / 2, 10, w / 2, h / 2, w * 0.6);
+            grad.addColorStop(0, '#38bdf8');
+            grad.addColorStop(0.5, '#0284c7');
+            grad.addColorStop(1, '#082f49');
+            iceCtx.fillStyle = grad;
+            iceCtx.fillRect(0, 0, w, h);
+
+            iceCtx.save();
+            iceCtx.translate(w / 2, h / 2);
+            iceCtx.rotate(Date.now() * 0.001);
+            iceCtx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+            iceCtx.beginPath();
+            iceCtx.moveTo(0, -35);
+            iceCtx.lineTo(28, 0);
+            iceCtx.lineTo(0, 35);
+            iceCtx.lineTo(-28, 0);
+            iceCtx.closePath();
+            iceCtx.fill();
+            iceCtx.restore();
+
+            iceBlocks.forEach(b => {
+                if (b.hp <= 0) return;
+                b.shimmer += 0.03;
+                iceCtx.fillStyle = b.hp === 2 ? 'rgba(224, 242, 254, 0.78)' : 'rgba(186, 230, 253, 0.45)';
+                iceCtx.fillRect(b.x + 1, b.y + 1, b.w - 2, b.h - 2);
+
+                iceCtx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                iceCtx.lineWidth = 1.5;
+                iceCtx.strokeRect(b.x + 1, b.y + 1, b.w - 2, b.h - 2);
+
+                if (b.hp === 1) {
+                    iceCtx.beginPath();
+                    iceCtx.moveTo(b.x + 5, b.y + 5);
+                    iceCtx.lineTo(b.x + b.w * 0.5, b.y + b.h * 0.5);
+                    iceCtx.lineTo(b.x + b.w - 6, b.y + b.h * 0.3);
+                    iceCtx.moveTo(b.x + b.w * 0.5, b.y + b.h * 0.5);
+                    iceCtx.lineTo(b.x + b.w * 0.3, b.y + b.h - 4);
+                    iceCtx.stroke();
+                }
+            });
+
+            for (let i = iceShards.length - 1; i >= 0; i--) {
+                const s = iceShards[i];
+                s.x += s.vx;
+                s.y += s.vy;
+                s.vy += 0.25;
+                s.alpha -= 0.025;
+                if (s.alpha <= 0) {
+                    iceShards.splice(i, 1);
+                    continue;
+                }
+                iceCtx.save();
+                iceCtx.globalAlpha = s.alpha;
+                iceCtx.translate(s.x, s.y);
+                iceCtx.rotate(s.rot);
+                iceCtx.fillStyle = '#ffffff';
+                iceCtx.beginPath();
+                iceCtx.moveTo(0, -s.size);
+                iceCtx.lineTo(s.size, s.size);
+                iceCtx.lineTo(-s.size, s.size);
+                iceCtx.closePath();
+                iceCtx.fill();
+                iceCtx.restore();
+            }
+        }
+
+        /* =========================================================================
+           6. TEMA HACKER: TERMINAL DE CÓDIGO, ESQUELETO (3s) Y DERRUMBE CON NOMBRE
+           ========================================================================= */
+        function logTerminal(text, isError = false) {
+            const log = document.getElementById('hacker-terminal-log');
+            const line = document.createElement('div');
+            line.className = isError ? 'text-red-400' : 'text-green-400';
+            line.innerHTML = `<span class="opacity-60">[${new Date().toLocaleTimeString()}]</span> ${text}`;
+            log.appendChild(line);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function handleTerminalCommand(e) {
+            e.preventDefault();
+            const input = document.getElementById('terminal-cmd-input');
+            const cmd = input.value.trim().toLowerCase();
+            if (!cmd) return;
+            input.value = '';
+            logTerminal(`$ ${cmd}`);
+
+            if (cmd === 'help') {
+                logTerminal('Comandos: <b>skeleton</b> (modo esqueleto 3s), <b>collapse</b> (derrumbar web), <b>scan</b> (analizar DOM).');
+            } else if (cmd === 'scan') {
+                const nodes = document.querySelectorAll('*').length;
+                logTerminal(`Escaneo completado: ${nodes} nodos DOM detectados. Vulnerabilidad CSS lista.`);
+            } else if (cmd === 'skeleton') {
+                triggerSkeletonHack();
+            } else if (cmd === 'collapse') {
+                triggerPageCollapse();
+            } else {
+                logTerminal(`Comando ejecutado: inyectando payload "${cmd}"... OK.`);
+            }
+        }
+
+        function triggerSkeletonHack() {
+            logTerminal('INICIANDO EXPLOIT: Despojando hojas de estilo y exponiendo código fuente por 3.0s...');
+            const overlay = document.getElementById('hacker-code-overlay');
+            const codeBox = document.getElementById('live-source-code');
+            const timerBadge = document.getElementById('skeleton-timer');
+
+            const rawHtml = document.documentElement.outerHTML.slice(0, 3800);
+            codeBox.textContent = rawHtml;
+
+            document.body.classList.add('skeleton-mode');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+
+            let remaining = 3.0;
+            const interval = setInterval(() => {
+                remaining -= 0.1;
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    document.body.classList.remove('skeleton-mode');
+                    overlay.classList.add('hidden');
+                    overlay.classList.remove('flex');
+                    logTerminal('SISTEMA RESTAURADO: CSS recompilado con éxito.');
+                } else {
+                    timerBadge.textContent = `RESTAURANDO EN: ${remaining.toFixed(1)}s`;
+                }
+            }, 100);
+        }
+
+        let letterRainParticles = [];
+        let isLetterCollapseActive = false;
+
+        function triggerPageCollapse() {
+            const userInput = hackerNameInput.value.trim();
+            const hackerName = (userInput || 'HACKER_ROOT').toUpperCase();
+
+            logTerminal(`ALERTA CRÍTICA: Ejecutando derrumbe estructural firmado por [${hackerName}]...`, true);
+
+            const blocks = document.querySelectorAll('.collapsible-block, #app-header');
+            blocks.forEach((el, idx) => {
+                const rot = (Math.random() - 0.5) * 35;
+                const dropY = window.innerHeight + 250;
+                setTimeout(() => {
+                    el.classList.add('collapsing-element');
+                    el.style.transform = `translateY(${dropY}px) rotate(${rot}deg)`;
+                    el.style.opacity = '0.2';
+                }, idx * 110);
+            });
+
+            setTimeout(() => {
+                startLetterCollapseWithName(hackerName);
+                document.getElementById('collapse-restore-banner').classList.remove('hidden');
+            }, 600);
+        }
+
+        function startLetterCollapseWithName(name) {
+            const fxCanvas = document.getElementById('global-fx-canvas');
+            fxCanvas.width = window.innerWidth;
+            fxCanvas.height = window.innerHeight;
+            letterRainParticles = [];
+            isLetterCollapseActive = true;
+
+            const chars = name.split('');
+            const totalParticles = 140;
+
+            for (let i = 0; i < totalParticles; i++) {
+                const ch = chars[i % chars.length];
+                letterRainParticles.push({
+                    char: ch,
+                    x: Math.random() * fxCanvas.width,
+                    y: -Math.random() * fxCanvas.height,
+                    vy: 3 + Math.random() * 6,
+                    vx: (Math.random() - 0.5) * 2,
+                    size: 16 + Math.random() * 14,
+                    isSignature: false,
+                    targetX: 0,
+                    targetY: 0
+                });
+            }
+
+            const spacing = Math.min(48, (fxCanvas.width - 60) / Math.max(1, chars.length));
+            const startX = (fxCanvas.width - (chars.length - 1) * spacing) / 2;
+            const floorY = fxCanvas.height * 0.55;
+
+            chars.forEach((ch, index) => {
+                letterRainParticles.push({
+                    char: ch,
+                    x: startX + index * spacing + (Math.random() - 0.5) * 80,
+                    y: -120 - index * 60,
+                    vy: 2,
+                    vx: 0,
+                    size: Math.min(54, spacing * 1.1),
+                    isSignature: true,
+                    targetX: startX + index * spacing,
+                    targetY: floorY
+                });
+            });
+        }
+
+        function restoreCollapsedPage() {
+            isLetterCollapseActive = false;
+            letterRainParticles = [];
+            document.getElementById('collapse-restore-banner').classList.add('hidden');
+            const blocks = document.querySelectorAll('.collapsible-block, #app-header');
+            blocks.forEach(el => {
+                el.style.transform = '';
+                el.style.opacity = '';
+                setTimeout(() => el.classList.remove('collapsing-element'), 500);
+            });
+            logTerminal('SISTEMA RECONSTRUIDO: Integridad del DOM al 100%.');
+            showToast('Página restaurada correctamente', 'fa-shield-halved');
+        }
+
+        /* =========================================================================
+           7. TEMA SYNTHWAVE: FUEGOS ARTIFICIALES SINCRONIZADOS CON BASS Y VELOCIDAD
+           ========================================================================= */
+        const synthCanvas = document.getElementById('synthwave-canvas');
+        const synthCtx = synthCanvas.getContext('2d');
+        let fireworks = [];
+        let fwParticles = [];
+
+        function resizeSynthwaveCanvas() {
+            synthCanvas.width = synthCanvas.parentElement.clientWidth;
+            synthCanvas.height = synthCanvas.parentElement.clientHeight;
+        }
+
+        function spawnFirework(fromAudio = false, customX = null, customY = null) {
+            const w = synthCanvas.width || 500;
+            const h = synthCanvas.height || 240;
+            const colors = ['#ff71ce', '#01cdfe', '#05ffa1', '#b967ff', '#fffb96'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+
+            const targetX = customX !== null ? customX : 40 + Math.random() * (w - 80);
+            const targetY = customY !== null ? customY : 25 + Math.random() * (h * 0.55);
+
+            fireworks.push({
+                x: targetX,
+                y: h,
+                targetY: targetY,
+                vy: -(5 + playbackRate * 3.5),
+                color: color,
+                power: fromAudio ? (0.8 + (bassEnergy / 100) * 1.2) : 1.2
+            });
+        }
+
+        function launchManualFirework() {
+            spawnFirework(false);
+        }
+
+        synthCanvas.addEventListener('click', (e) => {
+            const rect = synthCanvas.getBoundingClientRect();
+            spawnFirework(false, e.clientX - rect.left, e.clientY - rect.top);
+        });
+
+        function renderSynthwaveLoop() {
+            requestAnimationFrame(renderSynthwaveLoop);
+            if (currentTheme !== 'synthwave') return;
+
+            const w = synthCanvas.width;
+            const h = synthCanvas.height;
+
+            synthCtx.fillStyle = 'rgba(9, 1, 20, 0.24)';
+            synthCtx.fillRect(0, 0, w, h);
+
+            const gridPulse = (bassEnergy / 100) * 12;
+            synthCtx.strokeStyle = 'rgba(255, 113, 206, 0.25)';
+            synthCtx.lineWidth = 1;
+            synthCtx.beginPath();
+            synthCtx.moveTo(0, h - 35 - gridPulse);
+            synthCtx.lineTo(w, h - 35 - gridPulse);
+            synthCtx.stroke();
+
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                const f = fireworks[i];
+                f.y += f.vy;
+                synthCtx.fillStyle = f.color;
+                synthCtx.fillRect(f.x - 2, f.y, 4, 10);
+
+                if (f.y <= f.targetY) {
+                    const count = Math.floor(28 * f.power);
+                    for (let p = 0; p < count; p++) {
+                        const angle = (Math.PI * 2 * p) / count;
+                        const speed = (1.5 + Math.random() * 3.5) * f.power * Math.sqrt(playbackRate);
+                        fwParticles.push({
+                            x: f.x,
+                            y: f.y,
+                            vx: Math.cos(angle) * speed,
+                            vy: Math.sin(angle) * speed,
+                            color: f.color,
+                            alpha: 1
+                        });
+                    }
+                    fireworks.splice(i, 1);
+                }
+            }
+
+            for (let i = fwParticles.length - 1; i >= 0; i--) {
+                const p = fwParticles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.06;
+                p.alpha -= 0.018 * playbackRate;
+                if (p.alpha <= 0) {
+                    fwParticles.splice(i, 1);
+                    continue;
+                }
+                synthCtx.save();
+                synthCtx.globalAlpha = p.alpha;
+                synthCtx.fillStyle = p.color;
+                synthCtx.shadowBlur = 8;
+                synthCtx.shadowColor = p.color;
+                synthCtx.beginPath();
+                synthCtx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+                synthCtx.fill();
+                synthCtx.restore();
+            }
+        }
+
+        /* =========================================================================
+           8. TEMA CÓMIC: SOLO LÁPIZ DE DIBUJO LIBRE
+           ========================================================================= */
+        const comicCanvas = document.getElementById('comic-canvas');
+        const comicCtx = comicCanvas.getContext('2d');
+        let isDrawingComic = false;
+        let lastComicX = 0;
+        let lastComicY = 0;
+
+        function resizeComicCanvas() {
+            const temp = comicCtx.getImageData(0, 0, comicCanvas.width || 1, comicCanvas.height || 1);
+            comicCanvas.width = comicCanvas.parentElement.clientWidth;
+            comicCanvas.height = comicCanvas.parentElement.clientHeight;
+            comicCtx.putImageData(temp, 0, 0);
+        }
+
+        function clearComicCanvas() {
+            comicCtx.clearRect(0, 0, comicCanvas.width, comicCanvas.height);
+        }
+
+        function getComicCoords(e) {
+            const rect = comicCanvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function startComicDraw(e) {
+            isDrawingComic = true;
+            const pos = getComicCoords(e);
+            lastComicX = pos.x;
+            lastComicY = pos.y;
+        }
+
+        function moveComicDraw(e) {
+            if (!isDrawingComic) return;
+            if (e.touches) e.preventDefault();
+            const pos = getComicCoords(e);
+            comicCtx.strokeStyle = document.getElementById('comic-pencil-color').value;
+            comicCtx.lineWidth = parseInt(document.getElementById('comic-pencil-size').value, 10);
+            comicCtx.lineCap = 'round';
+            comicCtx.lineJoin = 'round';
+
+            comicCtx.beginPath();
+            comicCtx.moveTo(lastComicX, lastComicY);
+            comicCtx.lineTo(pos.x, pos.y);
+            comicCtx.stroke();
+
+            lastComicX = pos.x;
+            lastComicY = pos.y;
+        }
+
+        function endComicDraw() {
+            isDrawingComic = false;
+        }
+
+        comicCanvas.addEventListener('mousedown', startComicDraw);
+        comicCanvas.addEventListener('mousemove', moveComicDraw);
+        window.addEventListener('mouseup', endComicDraw);
+        comicCanvas.addEventListener('touchstart', startComicDraw, { passive: false });
+        comicCanvas.addEventListener('touchmove', moveComicDraw, { passive: false });
+        comicCanvas.addEventListener('touchend', endComicDraw);
+
+        /* =========================================================================
+           9. LOOP GLOBAL DE EFECTOS (DERRUMBE DE LETRAS CON NOMBRE DEL USUARIO)
+           ========================================================================= */
+        const fxCanvas = document.getElementById('global-fx-canvas');
+        const fxCtx = fxCanvas.getContext('2d');
+        const auraParticles = [];
+        const partyBackgroundLayer = document.getElementById('party-background-layer');
+        const partyBackgroundImage = document.getElementById('party-background-image');
+        const partyBackgroundVideo = document.getElementById('party-background-video');
+        const partyBackgroundInput = document.getElementById('party-background-upload');
+        const partyBackgroundClearButton = document.getElementById('party-background-clear');
+        const partyBackgroundName = document.getElementById('party-background-name');
+        const auraBurstMessage = document.getElementById('aura-burst-message');
+        let partyBackgroundUrl = null;
+        let partyBackgroundIsVideo = false;
+        let auraMessageTimer = null;
+
+        function resizeGlobalFxCanvas() {
+            fxCanvas.width = window.innerWidth;
+            fxCanvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeGlobalFxCanvas);
+
+        function releasePartyBackground() {
+            partyBackgroundVideo.pause();
+            partyBackgroundVideo.removeAttribute('src');
+            partyBackgroundVideo.load();
+            partyBackgroundImage.removeAttribute('src');
+            if (partyBackgroundUrl) URL.revokeObjectURL(partyBackgroundUrl);
+            partyBackgroundUrl = null;
+            partyBackgroundIsVideo = false;
+            partyBackgroundLayer.classList.add('hidden');
+            partyBackgroundImage.classList.add('hidden');
+            partyBackgroundVideo.classList.add('hidden');
+            document.body.classList.remove('party-background-active', 'theme-background-active');
+            partyBackgroundClearButton.disabled = true;
+            partyBackgroundName.textContent = 'Sin fondo personalizado';
+        }
+
+        function handlePartyBackgroundUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            event.target.value = '';
+            if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+                showToast('Elige un archivo de imagen o video válido.', 'fa-triangle-exclamation');
+                return;
+            }
+
+            releasePartyBackground();
+            partyBackgroundUrl = URL.createObjectURL(file);
+            partyBackgroundIsVideo = file.type.startsWith('video/');
+            partyBackgroundClearButton.disabled = false;
+            partyBackgroundName.textContent = file.name;
+
+            if (partyBackgroundIsVideo) {
+                partyBackgroundVideo.src = partyBackgroundUrl;
+            } else {
+                partyBackgroundImage.onerror = () => {
+                    showToast('No se pudo cargar la imagen de fondo.', 'fa-circle-exclamation');
+                };
+                partyBackgroundImage.src = partyBackgroundUrl;
+            }
+
+            setTheme(currentTheme);
+            showToast('Fondo a pantalla completa listo', 'fa-image');
+        }
+
+        function clearPartyBackground() {
+            releasePartyBackground();
+            partyBackgroundInput.value = '';
+            setTheme(currentTheme);
+            showToast('Fondo personalizado quitado', 'fa-image');
+        }
+
+        function triggerAuraParty() {
+            resizeGlobalFxCanvas();
+            const colors = ['#ff4fd8', '#00e5ff', '#ffe600', '#7cff00', '#ff5e5b', '#9b5cff'];
+            const audioBoost = isPlaying ? bassEnergy / 100 : 0;
+
+            for (let burst = 0; burst < 9; burst++) {
+                const centerX = 40 + Math.random() * Math.max(1, fxCanvas.width - 80);
+                const centerY = 40 + Math.random() * Math.max(1, fxCanvas.height - 80);
+                const particleCount = 24 + Math.round(audioBoost * 12);
+
+                for (let index = 0; index < particleCount; index++) {
+                    const angle = (Math.PI * 2 * index) / particleCount;
+                    const speed = 2 + Math.random() * 4 + audioBoost * 2;
+                    auraParticles.push({
+                        x: centerX,
+                        y: centerY,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        gravity: 0.035,
+                        size: 3 + Math.random() * 5,
+                        alpha: 1,
+                        rotation: Math.random() * Math.PI,
+                        spin: (Math.random() - 0.5) * 0.18,
+                        color: colors[Math.floor(Math.random() * colors.length)]
+                    });
+                }
+            }
+
+            const messageText = auraBurstMessage.firstElementChild;
+            auraBurstMessage.classList.remove('hidden');
+            auraBurstMessage.classList.add('flex');
+            messageText.classList.remove('aura-pop');
+            void messageText.offsetWidth;
+            messageText.classList.add('aura-pop');
+            clearTimeout(auraMessageTimer);
+            auraMessageTimer = setTimeout(() => {
+                auraBurstMessage.classList.add('hidden');
+                auraBurstMessage.classList.remove('flex');
+                messageText.classList.remove('aura-pop');
+            }, 1900);
+            showToast('¡FIESTA FULL! +1000 AURA', 'fa-star');
+        }
+
+        function renderGlobalFxLoop() {
+            requestAnimationFrame(renderGlobalFxLoop);
+            if (!isLetterCollapseActive && auraParticles.length === 0) {
+                fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+                return;
+            }
+
+            if (isLetterCollapseActive) {
+                fxCtx.fillStyle = 'rgba(0, 5, 0, 0.22)';
+                fxCtx.fillRect(0, 0, fxCanvas.width, fxCanvas.height);
+            } else {
+                fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+            }
+
+            if (isLetterCollapseActive) {
+                letterRainParticles.forEach(p => {
+                    if (p.isSignature) {
+                        p.x += (p.targetX - p.x) * 0.06;
+                        if (p.y < p.targetY) {
+                            p.vy += 0.45;
+                            p.y += p.vy;
+                        } else {
+                            p.y = p.targetY;
+                            p.vy = 0;
+                        }
+                        fxCtx.save();
+                        fxCtx.font = `bold ${p.size}px "Fira Code", monospace`;
+                        fxCtx.fillStyle = '#00ff41';
+                        fxCtx.shadowBlur = 18;
+                        fxCtx.shadowColor = '#00ff41';
+                        fxCtx.textAlign = 'center';
+                        fxCtx.fillText(p.char, p.x, p.y);
+                        fxCtx.restore();
+                    } else {
+                        p.y += p.vy;
+                        p.x += p.vx;
+                        if (p.y > fxCanvas.height + 20) {
+                            p.y = -20;
+                            p.x = Math.random() * fxCanvas.width;
+                        }
+                        fxCtx.font = `${p.size}px "Fira Code", monospace`;
+                        fxCtx.fillStyle = 'rgba(0, 255, 65, 0.65)';
+                        fxCtx.fillText(p.char, p.x, p.y);
+                    }
+                });
+            }
+
+            for (let i = auraParticles.length - 1; i >= 0; i--) {
+                const particle = auraParticles[i];
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.vy += particle.gravity;
+                particle.vx *= 0.992;
+                particle.rotation += particle.spin;
+                particle.alpha -= 0.012;
+
+                if (particle.alpha <= 0) {
+                    auraParticles.splice(i, 1);
+                    continue;
+                }
+
+                fxCtx.save();
+                fxCtx.globalAlpha = particle.alpha;
+                fxCtx.translate(particle.x, particle.y);
+                fxCtx.rotate(particle.rotation);
+                fxCtx.fillStyle = particle.color;
+                fxCtx.shadowBlur = 8;
+                fxCtx.shadowColor = particle.color;
+                fxCtx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size);
+                fxCtx.restore();
+            }
+        }
+
+        let deferredInstallPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', event => {
+            event.preventDefault();
+            deferredInstallPrompt = event;
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredInstallPrompt = null;
+            document.getElementById('install-app-button').classList.add('hidden');
+            document.getElementById('offline-status').textContent = 'App instalada en este dispositivo';
+            showToast('MP3 A quedó instalada', 'fa-circle-check');
+        });
+
+        async function installApp() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            if (isStandalone) {
+                showToast('La app ya está instalada', 'fa-circle-check');
+                return;
+            }
+
+            if (window.location.protocol === 'file:') {
+                showToast('Para instalarla, primero debe publicarse en HTTPS', 'fa-circle-info');
+                return;
+            }
+
+            if (deferredInstallPrompt) {
+                try {
+                    const promptEvent = deferredInstallPrompt;
+                    deferredInstallPrompt = null;
+                    await promptEvent.prompt();
+                    const { outcome } = await promptEvent.userChoice;
+                    showToast(
+                        outcome === 'accepted' ? 'Instalación iniciada' : 'Puedes instalarla desde el menú del navegador',
+                        outcome === 'accepted' ? 'fa-circle-check' : 'fa-circle-info'
+                    );
+                } catch (error) {
+                    console.error('No se pudo iniciar la instalación de MP3 A:', error);
+                    showToast('No se pudo iniciar la instalación', 'fa-circle-exclamation');
+                }
+                return;
+            }
+
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            showToast(
+                isIOS
+                    ? 'En Safari: Compartir y luego Añadir a pantalla de inicio'
+                    : 'Abre el menú del navegador y elige Instalar aplicación o Añadir a pantalla de inicio',
+                isIOS ? 'fa-share-from-square' : 'fa-circle-info'
+            );
+        }
+
+        function initOfflineSupport() {
+            const status = document.getElementById('offline-status');
+            const installButton = document.getElementById('install-app-button');
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            if (isStandalone) {
+                installButton.classList.add('hidden');
+                status.textContent = navigator.onLine
+                    ? 'App instalada • usa tus archivos locales'
+                    : 'App instalada • importa audio local';
+            }
+
+            const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+            if (window.location.protocol !== 'https:' && !isLocalHost) {
+                status.textContent = 'Para instalar y usar offline, abre la app desde HTTPS';
+                return;
+            }
+            if (!('serviceWorker' in navigator)) {
+                status.textContent = 'Este navegador no admite el modo sin conexión';
+                return;
+            }
+
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(() => navigator.serviceWorker.ready)
+                .then(() => {
+                    status.textContent = navigator.onLine
+                        ? 'Lista para reproducir audio local'
+                        : 'Sin conexión • elige audio de tu dispositivo';
+                })
+                .catch(error => {
+                    status.textContent = 'No se pudo preparar el modo sin conexión';
+                    console.error('No se pudo registrar el modo sin conexión de MP3 A:', error);
+                });
+
+            window.addEventListener('online', () => {
+                status.textContent = 'Lista para reproducir audio local';
+            });
+            window.addEventListener('offline', () => {
+                status.textContent = 'Sin conexión • elige audio de tu dispositivo';
+            });
+        }
+
+        /* =========================================================================
+           10. INICIALIZACIÓN AL CARGAR LA VENTANA
+           ========================================================================= */
+        window.onload = function () {
+            applyBrandLogoForTheme('default');
+            initOfflineSupport();
+            restoreSavedLibraryPrompt();
+            renderPlaylist();
+            resizeVisualizer();
+            renderVisualizerLoop();
+            updateAndDrawMario();
+            renderIceLoop();
+            renderSynthwaveLoop();
+            renderGlobalFxLoop();
+            document.getElementById('playlist-search')?.addEventListener('input', renderPlaylist);
+        };
+    </script>
 </body>
 </html>
