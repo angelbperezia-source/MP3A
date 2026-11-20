@@ -8,7 +8,14 @@ const APP_SHELL_URLS = [
     new URL('./app-icon.svg', APP_SCOPE).href,
     new URL('./app-icon-180.png', APP_SCOPE).href,
     new URL('./app-icon-192.png', APP_SCOPE).href,
-    new URL('./app-icon-512.png', APP_SCOPE).href
+    new URL('./app-icon-512.png', APP_SCOPE).href,
+    new URL('./ICONO NEW.jpg', APP_SCOPE).href,
+    new URL('./LOGO 1.png', APP_SCOPE).href,
+    new URL('./RETRO.jpg', APP_SCOPE).href,
+    new URL('./CRISTAL.jpg', APP_SCOPE).href,
+    new URL('./HACKER.jpg', APP_SCOPE).href,
+    new URL('./Synthwave.jpg', APP_SCOPE).href,
+    new URL('./comic.jpg', APP_SCOPE).href
 ];
 const EXTERNAL_ORIGINS = new Set([
     'https://cdn.tailwindcss.com',
