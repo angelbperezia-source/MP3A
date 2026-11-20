@@ -419,6 +419,8 @@
                 color: var(--accent);
             }
         }
+        button:focus-visible, input:focus-visible, select:focus-visible, label:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+        @media (prefers-reduced-motion: reduce) { * { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between relative selection:bg-emerald-500 selection:text-black mobile-view-music">
@@ -550,6 +552,7 @@
 
                 <!-- Controles Principales -->
                 <div id="playback-controls" class="flex items-center justify-between gap-2">
+                    <button id="shuffle-btn" onclick="toggleShuffle()" class="p-3 rounded-xl hover:opacity-80 transition opacity-50" title="Aleatorio (S)" aria-label="Aleatorio" aria-pressed="false"><i class="fa-solid fa-shuffle"></i></button>
                     <button onclick="prevTrack()" class="p-3 rounded-xl hover:opacity-80 transition" title="Anterior">
                         <i class="fa-solid fa-backward-step"></i>
                     </button>
@@ -559,6 +562,7 @@
                     <button onclick="nextTrack()" class="p-3 rounded-xl hover:opacity-80 transition" title="Siguiente">
                         <i class="fa-solid fa-forward-step"></i>
                     </button>
+                    <button id="repeat-btn" onclick="toggleRepeat()" class="p-3 rounded-xl hover:opacity-80 transition opacity-50" title="Repetir (R)" aria-label="Repetir"><i class="fa-solid fa-repeat"></i><span id="repeat-one" class="hidden text-[9px] font-bold ml-0.5">1</span></button>
 
                     <!-- Control de Velocidad / Pitch (Afecta fuegos artificiales en Synthwave) -->
                     <div id="playback-rate-control" class="flex flex-col items-end gap-1">
@@ -1268,6 +1272,8 @@
             if (!file) return;
 
             const url = URL.createObjectURL(file);
+            if (window.__lastUrl) URL.revokeObjectURL(window.__lastUrl);
+            window.__lastUrl = url;
             customAudioEl = new Audio(url);
             customAudioEl.playbackRate = playbackRate;
             customAudioEl.volume = parseFloat(document.getElementById('volume-slider').value);
@@ -1280,11 +1286,11 @@
                 document.getElementById('total-time').textContent = formatTime(customAudioEl.duration);
                 renderPlaylist();
             };
-            customAudioEl.onended = () => nextTrack();
+            customAudioEl.onended = () => handleEnded();
 
             isPlaying = true;
             updatePlayUI();
-            await customAudioEl.play();
+            await customAudioEl.play().catch(() => { isPlaying = false; updatePlayUI(); showToast("Toca play para reproducir", "fa-play"); });
             startProgressTimer();
         }
 
@@ -1352,7 +1358,7 @@
         function startProgressTimer() {
             clearInterval(progressTimer);
             progressTimer = setInterval(() => {
-                if (!isPlaying || !customAudioEl) return;
+                if (!isPlaying || !customAudioEl || window.__seeking) return;
                 const pct = (customAudioEl.currentTime / (customAudioEl.duration || 1)) * 100;
                 document.getElementById('progress-bar').value = pct;
                 document.getElementById('current-time').textContent = formatTime(customAudioEl.currentTime);
@@ -1361,11 +1367,12 @@
 
         function nextTrack() {
             if (!tracks.length) return;
-            selectTrack((currentTrackIndex + 1) % tracks.length, isPlaying);
+            selectTrack(shuffleOn && tracks.length > 1 ? randomOther() : (currentTrackIndex + 1) % tracks.length, isPlaying);
         }
 
         function prevTrack() {
             if (!tracks.length) return;
+            if (customAudioEl && customAudioEl.currentTime > 3) { customAudioEl.currentTime = 0; return; }
             selectTrack((currentTrackIndex - 1 + tracks.length) % tracks.length, isPlaying);
         }
 
@@ -1385,6 +1392,113 @@
 
         document.getElementById('volume-slider').addEventListener('input', (e) => {
             if (customAudioEl) customAudioEl.volume = parseFloat(e.target.value);
+        });
+
+        
+        /* =========================================================================
+           MEJORAS: buscar en la canción, aleatorio/repetir, controles del sistema,
+           atajos de teclado (PC) y preferencias guardadas
+           ========================================================================= */
+        let shuffleOn = false, repeatMode = 'off';
+        const PREF_KEY = 'mp3a_prefs_v2';
+        const volumeSlider = document.getElementById('volume-slider');
+        function savePrefs() {
+            try { localStorage.setItem(PREF_KEY, JSON.stringify({ theme: currentTheme, volume: +volumeSlider.value, rate: playbackRate, shuffle: shuffleOn, repeat: repeatMode })); } catch (_) {}
+        }
+        function randomOther() {
+            let n; do { n = Math.floor(Math.random() * tracks.length); } while (n === currentTrackIndex);
+            return n;
+        }
+        function refreshModeButtons() {
+            const sh = document.getElementById('shuffle-btn'), rp = document.getElementById('repeat-btn');
+            sh.classList.toggle('opacity-50', !shuffleOn); sh.style.color = shuffleOn ? 'var(--accent)' : ''; sh.setAttribute('aria-pressed', shuffleOn);
+            rp.classList.toggle('opacity-50', repeatMode === 'off'); rp.style.color = repeatMode !== 'off' ? 'var(--accent)' : '';
+            document.getElementById('repeat-one').classList.toggle('hidden', repeatMode !== 'one');
+        }
+        function toggleShuffle() { shuffleOn = !shuffleOn; refreshModeButtons(); savePrefs(); showToast(shuffleOn ? 'Aleatorio activado' : 'Aleatorio desactivado', 'fa-shuffle'); }
+        function toggleRepeat() {
+            repeatMode = repeatMode === 'off' ? 'all' : repeatMode === 'all' ? 'one' : 'off';
+            refreshModeButtons(); savePrefs();
+            showToast({ off: 'Repetir: desactivado', all: 'Repetir toda la lista', one: 'Repetir esta canción' }[repeatMode], 'fa-repeat');
+        }
+        function handleEnded() {
+            if (repeatMode === 'one') { customAudioEl.currentTime = 0; customAudioEl.play(); return; }
+            if (!shuffleOn && repeatMode === 'off' && currentTrackIndex === tracks.length - 1) {
+                isPlaying = false; updatePlayUI(); clearInterval(progressTimer); return;
+            }
+            nextTrack();
+        }
+
+        // Buscar dentro de la canción (antes la barra no permitía saltar)
+        const progressEl = document.getElementById('progress-bar');
+        ['pointerdown', 'touchstart'].forEach(ev => progressEl.addEventListener(ev, () => { window.__seeking = true; }, { passive: true }));
+        ['pointerup', 'touchend', 'change'].forEach(ev => progressEl.addEventListener(ev, () => { window.__seeking = false; }));
+        progressEl.addEventListener('input', () => {
+            if (!customAudioEl || !Number.isFinite(customAudioEl.duration)) return;
+            customAudioEl.currentTime = progressEl.value / 100 * customAudioEl.duration;
+            document.getElementById('current-time').textContent = formatTime(customAudioEl.currentTime);
+        });
+        function seekBy(sec) { if (customAudioEl) customAudioEl.currentTime = Math.max(0, Math.min(customAudioEl.duration || 0, customAudioEl.currentTime + sec)); }
+
+        // Controles en pantalla bloqueada, notificación y teclas multimedia
+        function updateMediaSession() {
+            if (!('mediaSession' in navigator) || currentTrackIndex < 0 || !tracks[currentTrackIndex]) return;
+            const t = tracks[currentTrackIndex];
+            try {
+                navigator.mediaSession.metadata = new MediaMetadata({ title: t.title, artist: t.artist, album: 'MP3 A Studio', artwork: [{ src: './app-icon-512.png', sizes: '512x512', type: 'image/png' }] });
+                navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+            } catch (_) {}
+        }
+        const _selectTrack = selectTrack; selectTrack = function () { _selectTrack.apply(this, arguments); updateMediaSession(); };
+        const _updatePlayUI = updatePlayUI; updatePlayUI = function () { _updatePlayUI(); updateMediaSession(); };
+        const _setTheme = setTheme; setTheme = function (t) { _setTheme(t); savePrefs(); };
+        const _changeRate = changePlaybackRate; changePlaybackRate = function (v) { _changeRate(v); savePrefs(); };
+        volumeSlider.addEventListener('input', savePrefs);
+        if ('mediaSession' in navigator) {
+            const set = (a, f) => { try { navigator.mediaSession.setActionHandler(a, f); } catch (_) {} };
+            set('play', () => { if (!isPlaying) togglePlay(); });
+            set('pause', () => { if (isPlaying) togglePlay(); });
+            set('previoustrack', prevTrack); set('nexttrack', nextTrack);
+            set('seekbackward', () => seekBy(-10)); set('seekforward', () => seekBy(10));
+            set('seekto', d => { if (customAudioEl && d.seekTime != null) customAudioEl.currentTime = d.seekTime; });
+            setInterval(() => {
+                if (customAudioEl && Number.isFinite(customAudioEl.duration)) {
+                    try { navigator.mediaSession.setPositionState({ duration: customAudioEl.duration, position: Math.min(customAudioEl.currentTime, customAudioEl.duration), playbackRate: customAudioEl.playbackRate || 1 }); } catch (_) {}
+                }
+            }, 1000);
+        }
+
+        // Atajos de teclado (PC). En el tema Retro, las teclas del juego tienen prioridad.
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            const el = e.target;
+            if (el instanceof HTMLElement && el.matches('input:not([type="range"]), textarea, select, [contenteditable="true"]')) return;
+            const k = e.key.toLowerCase(), retro = currentTheme === 'retro';
+            if (k === 'n') { nextTrack(); return; }
+            if (k === 'p') { prevTrack(); return; }
+            if (k === 'm') { volumeSlider.value = volumeSlider.value > 0 ? (window.__prevVol = volumeSlider.value, 0) : (window.__prevVol || 0.8); volumeSlider.dispatchEvent(new Event('input')); return; }
+            if (retro) return;
+            if ((k === ' ' || k === 'k') && !(el instanceof HTMLElement && el.closest('button, a, label'))) { e.preventDefault(); togglePlay(); }
+            else if (e.key === 'ArrowRight' && !(el instanceof HTMLInputElement)) { e.preventDefault(); seekBy(5); }
+            else if (e.key === 'ArrowLeft' && !(el instanceof HTMLInputElement)) { e.preventDefault(); seekBy(-5); }
+            else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                if (el instanceof HTMLInputElement) return;
+                e.preventDefault();
+                volumeSlider.value = Math.max(0, Math.min(1, +volumeSlider.value + (e.key === 'ArrowUp' ? 0.05 : -0.05)));
+                volumeSlider.dispatchEvent(new Event('input'));
+            }
+            else if (k === 's') toggleShuffle();
+            else if (k === 'r') toggleRepeat();
+        });
+
+        // Restaurar preferencias al abrir
+        window.addEventListener('load', () => {
+            let p = {}; try { p = JSON.parse(localStorage.getItem(PREF_KEY)) || {}; } catch (_) {}
+            if (typeof p.volume === 'number') { volumeSlider.value = p.volume; volumeSlider.dispatchEvent(new Event('input')); }
+            const r = document.getElementById('playback-rate');
+            if (r && p.rate) { r.value = p.rate; if (r.value) changePlaybackRate(r.value); }
+            shuffleOn = !!p.shuffle; repeatMode = p.repeat || 'off'; refreshModeButtons();
+            if (p.theme && p.theme !== currentTheme) { try { setTheme(p.theme); } catch (_) {} }
         });
 
         /* =========================================================================

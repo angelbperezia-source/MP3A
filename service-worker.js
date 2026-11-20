@@ -1,5 +1,5 @@
-const SHELL_CACHE = 'mp3a-shell-v1';
-const ASSET_CACHE = 'mp3a-assets-v1';
+const SHELL_CACHE = 'mp3a-shell-v2';
+const ASSET_CACHE = 'mp3a-assets-v2';
 const APP_SCOPE = self.registration.scope;
 const APP_SHELL_URLS = [
     new URL('./', APP_SCOPE).href,
