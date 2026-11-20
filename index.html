@@ -202,6 +202,11 @@
             transition: all 0.3s ease;
         }
 
+        #mobile-mini-player,
+        #mobile-nav {
+            display: none;
+        }
+
         #global-fx-canvas {
             width: 100vw;
             height: 100vh;
@@ -262,7 +267,7 @@
             body {
                 padding-top: env(safe-area-inset-top, 0px);
                 padding-right: env(safe-area-inset-right, 0px);
-                padding-bottom: env(safe-area-inset-bottom, 0px);
+                padding-bottom: calc(130px + env(safe-area-inset-bottom, 0px));
                 padding-left: env(safe-area-inset-left, 0px);
             }
             input:not([type="range"]):not([type="file"]),
@@ -306,10 +311,117 @@
             #panel-retro .gameboy-screen {
                 border-width: 6px;
             }
+            #app-header {
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+            #theme-selector {
+                display: none;
+            }
+            #app-main {
+                display: block;
+                padding-bottom: 0;
+            }
+            #app-main > section {
+                gap: 0.75rem;
+            }
+            #mobile-library-actions {
+                display: flex;
+            }
+            body.mobile-view-music #app-main > section:first-child > .theme-card:first-child,
+            body.mobile-view-visualizer #app-main > section:first-child,
+            body.mobile-view-visualizer #theme-game-wrapper,
+            body.mobile-view-themes #app-main > section:first-child,
+            body.mobile-view-themes #visualizer-card {
+                display: none;
+            }
+            body.mobile-view-music #app-main > section:first-child {
+                display: flex;
+            }
+            body.mobile-view-music #app-main > section:last-child {
+                display: none;
+            }
+            body.mobile-view-visualizer #app-main > section:last-child,
+            body.mobile-view-themes #app-main > section:last-child {
+                display: flex;
+            }
+            body.mobile-view-music #app-main > section:first-child > .theme-card:nth-child(2) {
+                max-height: calc(100dvh - 250px);
+                flex: 1 1 auto;
+            }
+            body.mobile-view-visualizer #visualizer-card {
+                display: block;
+                min-height: 180px;
+            }
+            body.mobile-view-themes #theme-selector {
+                display: flex;
+                justify-content: flex-start;
+            }
+            body.mobile-player-expanded #app-main > section:first-child {
+                display: flex;
+            }
+            body.mobile-player-expanded #app-main > section:first-child > .theme-card:first-child {
+                display: flex;
+                min-height: 0;
+            }
+            body.mobile-player-expanded #app-main > section:first-child > .theme-card:nth-child(2),
+            body.mobile-player-expanded #app-main > section:last-child,
+            body.mobile-player-expanded #mobile-mini-player {
+                display: none;
+            }
+            #mobile-mini-player:not(.hidden) {
+                position: fixed;
+                z-index: 45;
+                right: max(0.5rem, env(safe-area-inset-right, 0px));
+                bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+                left: max(0.5rem, env(safe-area-inset-left, 0px));
+                display: flex;
+                min-height: 60px;
+                align-items: center;
+                gap: 0.6rem;
+                border: 1px solid var(--border-color);
+                border-radius: 0.9rem;
+                background: var(--bg-primary);
+                background: color-mix(in srgb, var(--bg-primary) 88%, transparent);
+                padding: 0.5rem 0.65rem;
+                box-shadow: var(--shadow);
+                backdrop-filter: blur(16px);
+            }
+            #mobile-nav {
+                position: fixed;
+                z-index: 44;
+                display: grid;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                display: grid;
+                height: calc(64px + env(safe-area-inset-bottom, 0px));
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                align-items: center;
+                border-top: 1px solid var(--border-color);
+                background: var(--bg-primary);
+                background: color-mix(in srgb, var(--bg-primary) 94%, transparent);
+                padding: 0.3rem 0 max(0.3rem, env(safe-area-inset-bottom, 0px));
+                backdrop-filter: blur(18px);
+            }
+            .mobile-nav-button {
+                display: flex;
+                min-height: 48px;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 0.2rem;
+                color: var(--text-secondary);
+                font-size: 0.65rem;
+                font-weight: 700;
+            }
+            .mobile-nav-button[aria-current="page"] {
+                color: var(--accent);
+            }
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between relative selection:bg-emerald-500 selection:text-black">
+<body class="min-h-screen flex flex-col justify-between relative selection:bg-emerald-500 selection:text-black mobile-view-music">
 
     <div id="party-background-layer" class="fixed inset-0 z-0 hidden overflow-hidden pointer-events-none" aria-hidden="true">
         <img id="party-background-image" class="hidden h-full w-full object-cover opacity-60">
@@ -372,7 +484,7 @@
         </div>
 
         <!-- Selector de Temas con su respectivo logo -->
-        <div class="flex flex-wrap items-center justify-center gap-2">
+        <div id="theme-selector" class="flex flex-wrap items-center justify-center gap-2">
             <button onclick="setTheme('default')" data-theme-btn="default" class="theme-btn px-3 py-1.5 rounded-lg text-xs font-bold border border-white/20 hover:scale-105 transition flex items-center gap-1.5 bg-zinc-800 text-white">
                 <img src="./ICONO NEW.jpg" alt="Oscuro" class="w-4 h-4 rounded-sm object-contain"> Oscuro
             </button>
@@ -407,9 +519,9 @@
                         <div id="playing-badge" class="hidden absolute bottom-1 right-1 px-1.5 py-0.5 text-[9px] font-bold rounded accent-bg">LIVE</div>
                     </div>
                     <div class="min-w-0 flex-1">
-                        <span class="text-[10px] uppercase tracking-widest opacity-70 font-bold" id="track-genre">Sintetizador Electrónico</span>
-                        <h2 id="track-title" class="text-base sm:text-lg font-extrabold truncate mt-0.5">Neon Horizon (Bass Boost)</h2>
-                        <p id="track-artist" class="text-xs opacity-80 truncate">ANGELB Audio Engine</p>
+                        <span class="text-[10px] uppercase tracking-widest opacity-70 font-bold" id="track-genre">SIN AUDIO</span>
+                        <h2 id="track-title" class="text-base sm:text-lg font-extrabold truncate mt-0.5">Carga tu música</h2>
+                        <p id="track-artist" class="text-xs opacity-80 truncate">Elige archivos MP3 o una carpeta local</p>
 
                         <!-- Medidor de Bass & Velocidad en tiempo real -->
                         <div id="audio-meter-row" class="mt-2 flex items-center gap-3 text-[10px]">
@@ -432,7 +544,7 @@
                     <input type="range" id="progress-bar" value="0" min="0" max="100" step="0.1" class="w-full h-1.5 rounded-lg">
                     <div class="flex justify-between text-[11px] opacity-75 font-mono">
                         <span id="current-time">00:00</span>
-                        <span id="total-time">02:30</span>
+                        <span id="total-time">00:00</span>
                     </div>
                 </div>
 
@@ -480,11 +592,19 @@
                 </div>
             </div>
 
-            <!-- Playlist / Pistas Integradas y Locales -->
+            <!-- Playlist / Biblioteca Local -->
             <div class="theme-card p-4 flex-1 flex flex-col gap-2 max-h-64 overflow-y-auto collapsible-block">
                 <div class="flex items-center justify-between pb-1 border-b border-white/10">
-                    <span class="text-xs font-bold uppercase tracking-wider opacity-80">Biblioteca & Pistas</span>
-                    <span id="playlist-count" class="text-[10px] opacity-60">Sintetizador + Local</span>
+                    <span class="text-xs font-bold uppercase tracking-wider opacity-80">Biblioteca local</span>
+                    <span id="playlist-count" class="text-[10px] opacity-60">0 canciones</span>
+                </div>
+                <div id="mobile-library-actions" class="hidden items-center gap-2">
+                    <button type="button" onclick="requestDeviceMusicAccess()" class="flex-1 rounded-lg border border-white/20 px-3 py-2 text-xs font-bold">
+                        <i class="fa-solid fa-folder-open mr-1"></i> Abrir carpeta
+                    </button>
+                    <button type="button" onclick="document.getElementById('audio-upload').click()" class="flex-1 rounded-lg accent-bg px-3 py-2 text-xs font-bold">
+                        <i class="fa-solid fa-plus mr-1"></i> Añadir música
+                    </button>
                 </div>
                 <label class="relative block">
                     <span class="sr-only">Buscar canciones</span>
@@ -499,12 +619,12 @@
         <section class="lg:col-span-7 flex flex-col gap-4">
 
             <!-- Visualizador de Frecuencias -->
-            <div class="theme-card p-3 relative overflow-hidden collapsible-block">
+            <div id="visualizer-card" class="theme-card p-3 relative overflow-hidden collapsible-block">
                 <div class="flex justify-between items-center mb-1.5 px-1">
                     <span class="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5">
                         <i class="fa-solid fa-chart-simple" style="color: var(--accent);"></i> Visualizador de Espectro
                     </span>
-                    <span id="visualizer-status" class="text-[10px] opacity-75">Reactivo al Bass y Velocidad</span>
+                    <span id="visualizer-status" class="text-[10px] opacity-75">Se activa al reproducir música local</span>
                 </div>
                 <div class="w-full h-24 sm:h-28 rounded-lg overflow-hidden bg-black/40 relative">
                     <canvas id="visualizer-canvas" class="w-full h-full block"></canvas>
@@ -744,13 +864,46 @@
         </section>
     </main>
 
+    <div id="mobile-mini-player" class="mobile-mini-player hidden" aria-label="Reproductor mini">
+        <button type="button" onclick="toggleMobilePlayer()" class="flex min-w-0 flex-1 items-center gap-2 text-left" aria-label="Abrir reproductor">
+            <img id="mobile-track-cover" src="./ICONO NEW.jpg" alt="" class="h-10 w-10 shrink-0 rounded-lg object-cover">
+            <span class="min-w-0 flex-1">
+                <span id="mobile-track-title" class="block truncate text-xs font-bold">Canción</span>
+                <span id="mobile-track-artist" class="block truncate text-[10px] opacity-70">Artista</span>
+            </span>
+            <i class="fa-solid fa-chevron-up px-1 text-[10px] opacity-60" aria-hidden="true"></i>
+        </button>
+        <button type="button" onclick="prevTrack()" class="p-2" aria-label="Canción anterior">
+            <i class="fa-solid fa-backward-step"></i>
+        </button>
+        <button type="button" onclick="togglePlay()" class="p-2 text-lg" aria-label="Reproducir o pausar">
+            <i id="mobile-play-icon" class="fa-solid fa-play"></i>
+        </button>
+        <button type="button" onclick="nextTrack()" class="p-2" aria-label="Siguiente canción">
+            <i class="fa-solid fa-forward-step"></i>
+        </button>
+    </div>
+
+    <nav id="mobile-nav" class="mobile-nav" aria-label="Navegación móvil">
+        <button type="button" class="mobile-nav-button" data-mobile-view="music" aria-current="page" onclick="setMobileView('music')">
+            <i class="fa-solid fa-music text-base"></i><span>Música</span>
+        </button>
+        <button type="button" class="mobile-nav-button" data-mobile-view="visualizer" onclick="setMobileView('visualizer')">
+            <i class="fa-solid fa-chart-simple text-base"></i><span>Visualizaciones</span>
+        </button>
+        <button type="button" class="mobile-nav-button" data-mobile-view="themes" onclick="setMobileView('themes')">
+            <i class="fa-solid fa-wand-magic-sparkles text-base"></i><span>Temas</span>
+        </button>
+    </nav>
+
     <script>
         /* =========================================================================
            1. ESTADO GLOBAL, LOGOS POR TEMA Y GESTIÓN DE TEMAS
            ========================================================================= */
         let currentTheme = 'default';
+        let currentMobileView = 'music';
         let isPlaying = false;
-        let currentTrackIndex = 0;
+        let currentTrackIndex = -1;
         let bassEnergy = 0;
         let playbackRate = 1.0;
 
@@ -763,44 +916,7 @@
             comic: './comic.jpg'
         };
 
-        const tracks = [
-            {
-                title: "Neon Horizon (Bass Boost)",
-                artist: "ANGELB Audio Engine",
-                genre: "Synthwave / Outrun",
-                bpm: 124,
-                baseFreq: 55,
-                cover: "./Synthwave.jpg",
-                duration: 150
-            },
-            {
-                title: "8-Bit Mushroom Kingdom",
-                artist: "Chiptune Masters",
-                genre: "Retro Arcade 8-Bit",
-                bpm: 138,
-                baseFreq: 65.41,
-                cover: "./RETRO.jpg",
-                duration: 135
-            },
-            {
-                title: "Sub-Zero Crystal Caverns",
-                artist: "Glacier Ambient",
-                genre: "Chill / Cristal",
-                bpm: 96,
-                baseFreq: 49.0,
-                cover: "./CRISTAL.jpg",
-                duration: 180
-            },
-            {
-                title: "Mainframe Root Breach",
-                artist: "CyberSec 0x01",
-                genre: "Dark Cyberpunk / Hacker",
-                bpm: 132,
-                baseFreq: 41.2,
-                cover: "./HACKER.jpg",
-                duration: 162
-            }
-        ];
+        const tracks = [];
 
         function applyBrandLogoForTheme(theme) {
             const logoImg = document.getElementById('brand-logo-img');
@@ -822,9 +938,43 @@
             }, 2600);
         }
 
+        function setMobileView(view) {
+            currentMobileView = view;
+            document.body.classList.remove('mobile-view-music', 'mobile-view-visualizer', 'mobile-view-themes', 'mobile-player-expanded');
+            document.body.classList.add(`mobile-view-${view}`);
+            document.querySelectorAll('.mobile-nav-button').forEach(button => {
+                if (button.dataset.mobileView === view) {
+                    button.setAttribute('aria-current', 'page');
+                } else {
+                    button.removeAttribute('aria-current');
+                }
+            });
+        }
+
+        function toggleMobilePlayer() {
+            if (currentTrackIndex < 0 || currentTrackIndex >= tracks.length) return;
+            if (document.body.classList.contains('mobile-player-expanded')) {
+                document.body.classList.remove('mobile-player-expanded');
+            } else {
+                setMobileView('music');
+                document.body.classList.add('mobile-player-expanded');
+            }
+        }
+
+        function updateMobilePlayer() {
+            const player = document.getElementById('mobile-mini-player');
+            const hasTrack = currentTrackIndex >= 0 && currentTrackIndex < tracks.length;
+            player.classList.toggle('hidden', !hasTrack);
+            if (!hasTrack) return;
+            const track = tracks[currentTrackIndex];
+            document.getElementById('mobile-track-cover').src = track.cover || THEME_LOGOS[currentTheme] || './ICONO NEW.jpg';
+            document.getElementById('mobile-track-title').textContent = track.title;
+            document.getElementById('mobile-track-artist').textContent = track.artist;
+        }
+
         function setTheme(theme) {
             currentTheme = theme;
-            document.body.className = `min-h-screen flex flex-col justify-between relative selection:bg-emerald-500 selection:text-black ${theme !== 'default' ? 'theme-' + theme : ''}`;
+            document.body.className = `min-h-screen flex flex-col justify-between relative selection:bg-emerald-500 selection:text-black mobile-view-${currentMobileView} ${theme !== 'default' ? 'theme-' + theme : ''}`;
             applyBrandLogoForTheme(theme);
 
             const showPartyBackground = theme === 'synthwave' && Boolean(partyBackgroundUrl);
@@ -868,8 +1018,6 @@
         let dataArray = null;
         let customAudioEl = null;
         let customSourceNode = null;
-        let synthInterval = null;
-        let trackProgress = 0;
         let progressTimer = null;
         let directoryHandle = null;
 
@@ -962,8 +1110,6 @@
                     title: cleanTitle,
                     artist: sourceLabel,
                     genre: 'Audio del Dispositivo',
-                    bpm: 120,
-                    baseFreq: 55,
                     cover: THEME_LOGOS[currentTheme] || './ICONO NEW.jpg',
                     duration: 0,
                     localFile: file,
@@ -978,8 +1124,8 @@
                 showToast('No hay canciones nuevas para agregar', 'fa-circle-info');
                 return;
             }
-            setLibraryStatus(`${added} canciones cargadas desde "${sourceLabel}".`);
-            showToast(`${added} canciones listas para escuchar`, 'fa-music');
+            setLibraryStatus(`${added} ${added === 1 ? 'canción cargada' : 'canciones cargadas'} desde "${sourceLabel}".`);
+            showToast(`${added} ${added === 1 ? 'canción lista' : 'canciones listas'} para escuchar`, 'fa-music');
             selectTrack(firstAddedIndex);
             if (!isPlaying) {
                 togglePlay();
@@ -1044,7 +1190,7 @@
             container.innerHTML = '';
             if (countEl) {
                 const localCount = tracks.filter(t => Boolean(t.localFile || t.fileHandle)).length;
-                countEl.textContent = localCount > 0 ? `${localCount} locales • ${tracks.length} total` : 'Sintetizador + Local';
+                countEl.textContent = `${localCount} ${localCount === 1 ? 'canción' : 'canciones'}`;
             }
             const searchInput = document.getElementById('playlist-search');
             const query = (searchInput?.value || '').trim().toLowerCase();
@@ -1085,10 +1231,12 @@
                 btn.append(left, duration);
                 container.appendChild(btn);
             });
-            if (query && !visibleTracks.length) {
+            if (!visibleTracks.length) {
                 const empty = document.createElement('p');
                 empty.className = 'py-3 text-center text-[11px] opacity-60';
-                empty.textContent = 'No se encontraron canciones';
+                empty.textContent = tracks.length
+                    ? 'No se encontraron canciones'
+                    : 'Carga MP3 o selecciona una carpeta para empezar';
                 container.appendChild(empty);
             }
         }
@@ -1102,7 +1250,6 @@
 
         async function playLocalTrack(track) {
             initAudioContext();
-            stopSynthLoop();
             if (customAudioEl) {
                 customAudioEl.pause();
                 customAudioEl = null;
@@ -1142,6 +1289,7 @@
         }
 
         function selectTrack(idx, autoPlayIfActive = false) {
+            if (!Number.isInteger(idx) || idx < 0 || idx >= tracks.length) return;
             currentTrackIndex = idx;
             const t = tracks[idx];
             document.getElementById('track-title').textContent = t.title;
@@ -1150,50 +1298,38 @@
             document.getElementById('track-cover').src = t.cover || THEME_LOGOS[currentTheme] || './ICONO NEW.jpg';
             document.getElementById('total-time').textContent = formatTime(t.duration);
             document.getElementById('progress-bar').value = 0;
-            trackProgress = 0;
+            document.getElementById('current-time').textContent = '00:00';
             renderPlaylist();
+            updateMobilePlayer();
 
-            if (t.localFile || t.fileHandle) {
-                if (isPlaying || autoPlayIfActive) {
-                    playLocalTrack(t);
-                } else if (customAudioEl) {
-                    customAudioEl.pause();
-                    customAudioEl = null;
-                }
-                return;
-            }
-
-            if (customAudioEl) {
+            if (isPlaying || autoPlayIfActive) {
+                playLocalTrack(t);
+            } else if (customAudioEl) {
                 customAudioEl.pause();
                 customAudioEl = null;
-            }
-            if (isPlaying) {
-                startSynthLoop();
             }
         }
 
         function togglePlay() {
-            initAudioContext();
+            if (currentTrackIndex < 0 || currentTrackIndex >= tracks.length) {
+                showToast('Carga una canción local para reproducirla', 'fa-music');
+                return;
+            }
             const current = tracks[currentTrackIndex];
 
             if (!isPlaying) {
                 isPlaying = true;
                 updatePlayUI();
-                if (current && (current.localFile || current.fileHandle)) {
-                    if (customAudioEl && customAudioEl.src.startsWith('blob:')) {
-                        customAudioEl.play();
-                    } else {
-                        playLocalTrack(current);
-                    }
+                if (customAudioEl && customAudioEl.src.startsWith('blob:')) {
+                    customAudioEl.play();
                 } else {
-                    startSynthLoop();
+                    playLocalTrack(current);
                 }
                 startProgressTimer();
             } else {
                 isPlaying = false;
                 updatePlayUI();
                 if (customAudioEl) customAudioEl.pause();
-                stopSynthLoop();
                 clearInterval(progressTimer);
             }
         }
@@ -1201,94 +1337,35 @@
         function updatePlayUI() {
             const icon = document.getElementById('play-icon');
             const badge = document.getElementById('playing-badge');
+            const mobileIcon = document.getElementById('mobile-play-icon');
             if (isPlaying) {
                 icon.className = 'fa-solid fa-pause';
+                mobileIcon.className = 'fa-solid fa-pause';
                 badge.classList.remove('hidden');
             } else {
                 icon.className = 'fa-solid fa-play ml-0.5';
+                mobileIcon.className = 'fa-solid fa-play';
                 badge.classList.add('hidden');
-            }
-        }
-
-        function startSynthLoop() {
-            stopSynthLoop();
-            const t = tracks[currentTrackIndex];
-            let step = 0;
-            const intervalMs = (60 / (t.bpm * playbackRate)) * 500;
-
-            synthInterval = setInterval(() => {
-                if (!isPlaying || !audioCtx) return;
-                const now = audioCtx.currentTime;
-                const vol = parseFloat(document.getElementById('volume-slider').value);
-
-                if (step % 2 === 0) {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(t.baseFreq * 2.5, now);
-                    osc.frequency.exponentialRampToValueAtTime(t.baseFreq * 0.7, now + 0.18);
-
-                    gain.gain.setValueAtTime(vol * 0.65, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-
-                    osc.connect(gain);
-                    gain.connect(analyser);
-                    osc.start(now);
-                    osc.stop(now + 0.23);
-                }
-
-                const notes = [1, 1.25, 1.5, 1.875, 2, 1.5];
-                const noteMult = notes[step % notes.length];
-                const lead = audioCtx.createOscillator();
-                const leadGain = audioCtx.createGain();
-                lead.type = currentTheme === 'retro' ? 'square' : 'sawtooth';
-                lead.frequency.setValueAtTime(t.baseFreq * 4 * noteMult * playbackRate, now);
-
-                leadGain.gain.setValueAtTime(vol * 0.14, now);
-                leadGain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
-
-                lead.connect(leadGain);
-                leadGain.connect(analyser);
-                lead.start(now);
-                lead.stop(now + 0.17);
-
-                step++;
-            }, intervalMs);
-        }
-
-        function stopSynthLoop() {
-            if (synthInterval) {
-                clearInterval(synthInterval);
-                synthInterval = null;
             }
         }
 
         function startProgressTimer() {
             clearInterval(progressTimer);
             progressTimer = setInterval(() => {
-                if (!isPlaying) return;
-                if (customAudioEl) {
-                    const pct = (customAudioEl.currentTime / (customAudioEl.duration || 1)) * 100;
-                    document.getElementById('progress-bar').value = pct;
-                    document.getElementById('current-time').textContent = formatTime(customAudioEl.currentTime);
-                } else {
-                    const dur = tracks[currentTrackIndex].duration;
-                    trackProgress += 0.25 * playbackRate;
-                    if (trackProgress >= dur) {
-                        nextTrack();
-                        return;
-                    }
-                    document.getElementById('progress-bar').value = (trackProgress / dur) * 100;
-                    document.getElementById('current-time').textContent = formatTime(trackProgress);
-                }
+                if (!isPlaying || !customAudioEl) return;
+                const pct = (customAudioEl.currentTime / (customAudioEl.duration || 1)) * 100;
+                document.getElementById('progress-bar').value = pct;
+                document.getElementById('current-time').textContent = formatTime(customAudioEl.currentTime);
             }, 250);
         }
 
         function nextTrack() {
+            if (!tracks.length) return;
             selectTrack((currentTrackIndex + 1) % tracks.length, isPlaying);
         }
 
         function prevTrack() {
+            if (!tracks.length) return;
             selectTrack((currentTrackIndex - 1 + tracks.length) % tracks.length, isPlaying);
         }
 
@@ -1297,7 +1374,6 @@
             document.getElementById('speed-display').textContent = playbackRate.toFixed(2) + 'x';
             document.getElementById('synth-speed-val').textContent = playbackRate.toFixed(2) + 'x';
             if (customAudioEl) customAudioEl.playbackRate = playbackRate;
-            if (isPlaying && !customAudioEl) startSynthLoop();
         }
 
         async function handleFileUpload(e) {
@@ -1312,7 +1388,7 @@
         });
 
         /* =========================================================================
-           3. VISUALIZADOR DE ESPECTRO + DETECTOR DE BASS (SINCRONIZA SYNTHWAVE)
+           3. VISUALIZADOR DE ESPECTRO + DETECTOR DE BASS
            ========================================================================= */
         const visCanvas = document.getElementById('visualizer-canvas');
         const visCtx = visCanvas.getContext('2d');
@@ -2528,7 +2604,9 @@
             const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
             if (isStandalone) {
                 installButton.classList.add('hidden');
-                status.textContent = navigator.onLine ? 'App instalada • lista sin conexión' : 'App instalada • sin conexión';
+                status.textContent = navigator.onLine
+                    ? 'App instalada • usa tus archivos locales'
+                    : 'App instalada • importa audio local';
             }
 
             const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
@@ -2545,8 +2623,8 @@
                 .then(() => navigator.serviceWorker.ready)
                 .then(() => {
                     status.textContent = navigator.onLine
-                        ? 'Lista para escuchar sin conexión'
-                        : 'Sin conexión • pistas integradas disponibles';
+                        ? 'Lista para reproducir audio local'
+                        : 'Sin conexión • elige audio de tu dispositivo';
                 })
                 .catch(error => {
                     status.textContent = 'No se pudo preparar el modo sin conexión';
@@ -2554,10 +2632,10 @@
                 });
 
             window.addEventListener('online', () => {
-                status.textContent = 'Lista para escuchar sin conexión';
+                status.textContent = 'Lista para reproducir audio local';
             });
             window.addEventListener('offline', () => {
-                status.textContent = 'Sin conexión • pistas integradas disponibles';
+                status.textContent = 'Sin conexión • elige audio de tu dispositivo';
             });
         }
 
@@ -2569,7 +2647,6 @@
             initOfflineSupport();
             restoreSavedLibraryPrompt();
             renderPlaylist();
-            selectTrack(0);
             resizeVisualizer();
             renderVisualizerLoop();
             updateAndDrawMario();
